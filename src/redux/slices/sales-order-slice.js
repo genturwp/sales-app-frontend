@@ -51,6 +51,15 @@ export const searchSalesItems = createAsyncThunk(
     }
 );
 
+export const searchSalesOrderBySoNumber = createAsyncThunk(
+    `${namespace}/searchSalesOrderSoNumber`,
+    async (params, thunkAPI) => {
+        const endpointUrl = `${CONST.API_ENDPOINT}/sales-management/so/search-by-so-number?soNumber=${params.soNumber}`
+        const resp = await axios.get(endpointUrl, {headers: {'Authorization': `Bearer ${params.token}`}});
+        return resp.data.payload;
+    }
+)
+
 const salesOrderSlice = createSlice({
     name: namespace,
     initialState: {
@@ -68,7 +77,10 @@ const salesOrderSlice = createSlice({
         searchSalesItemsError: null,
         findSOByIdLoading: false,
         findSOByIdResp: null,
-        findSOByIdError: null
+        findSOByIdError: null,
+        searchSoBySoNumberLoading: false,
+        searchSoBySoNumberResp: null,
+        searchSoBySoNumberError: null,
     },
     reducers: {
         resetCreateSODraftLoading: (state) => {
@@ -115,6 +127,15 @@ const salesOrderSlice = createSlice({
         },
         resetFindSOByIdError: (state) => {
             state.findSOByIdError = null;
+        },
+        resetSearchSoBySoNumberLoading: (state) => {
+            state.searchSoBySoNumberLoading = false;
+        },
+        resetSearchSoBySoNumberResp: (state) => {
+            state.searchSoBySoNumberResp = null;
+        },
+        resetSearchSoBySoNumberError: (state) => {
+            state.searchSoBySoNumberError = null;
         }
     },
     extraReducers: (builders) => {
@@ -194,13 +215,29 @@ const salesOrderSlice = createSlice({
                 state.findSOByIdResp= null;
                 state.findSOByIdError = action.error;
             })
+            .addCase(searchSalesOrderBySoNumber.pending, (state, action) => {
+                state.searchSoBySoNumberLoading = true;
+                state.searchSoBySoNumberResp = null;
+                state.searchSoBySoNumberError = null;
+            })
+            .addCase(searchSalesOrderBySoNumber.fulfilled, (state, action) => {
+                state.searchSoBySoNumberLoading = false;
+                state.searchSoBySoNumberResp = action.payload;
+                state.searchSoBySoNumberError = null;
+            })
+            .addCase(searchSalesOrderBySoNumber.rejected, (state, action) => {
+                state.searchSoBySoNumberLoading = false;
+                state.searchSoBySoNumberResp = null;
+                state.searchSoBySoNumberError = action.error;
+            })
     }
 });
 
 export const {
 resetCreateSODraftError, resetCreateSODraftLoading, resetCreateSODraftResp, resetSearchSalesOrderError, 
 resetSearchSalesOrderLoading, resetSearchSalesOrderResp, resetUpdateSODraftToOpenError, resetUpdateSODraftToOpenLoading, resetUpdateSODraftToOpenResp,
-resetSearchSalesItemsError, resetSearchSalesItemsLoading, resetSearchSalesItemsResp, resetFindSOByIdError, resetFindSOByIdLoading, resetFindSOByIdResp
+resetSearchSalesItemsError, resetSearchSalesItemsLoading, resetSearchSalesItemsResp, resetFindSOByIdError, resetFindSOByIdLoading, resetFindSOByIdResp,
+resetSearchSoBySoNumberLoading, resetSearchSoBySoNumberResp, resetSearchSoBySoNumberError
 } = salesOrderSlice.actions;
 
 export default salesOrderSlice.reducer;

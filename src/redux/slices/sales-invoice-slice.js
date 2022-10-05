@@ -22,6 +22,15 @@ export const searchSalesInvoice = createAsyncThunk(
     }
 );
 
+export const createIncomingPayment = createAsyncThunk(
+    `${namespace}/createIncomingPayment`,
+    async (params, thunkAPI) => {
+        const endpointUrl = `${CONST.API_ENDPOINT}/sales-management/si/create-incoming-payment`;
+        const resp = await axios.post(endpointUrl, params.incomingPayment, { headers: { 'Authorization': `Bearer ${params.token}`, 'Content-Type': 'application/json' } });
+        return resp.data.payload;
+    }
+);
+
 const salesInvoiceSlice = createSlice({
     name: namespace,
     initialState: {
@@ -31,6 +40,9 @@ const salesInvoiceSlice = createSlice({
         searchSalesInvLoading: false,
         searchSalesInvResp: null,
         searchSalesInvError: null,
+        createIncomingPaymentLoading: false,
+        createIncomingPaymentResp: null,
+        createIncomingPaymentErr: null,
     },
     reducers: {
         resetCreateSalesInvLoading: (state) => {
@@ -50,7 +62,16 @@ const salesInvoiceSlice = createSlice({
         },
         resetSearchSalesinvError: (state) => {
             state.searchSalesInvError = null;
-        }
+        },
+        resetCreateIncomingPaymentLoading: (state) => {
+            state.createIncomingPaymentLoading = false;
+        },
+        resetCreateIncomingPaymentResp: (state) => {
+            state.createIncomingPaymentResp = null;
+        },
+        resetCreateIncomingPaymentError: (state) => {
+            state.createIncomingPaymentErr = null;
+        },
     },
     extraReducers: (builders) => {
         builders
@@ -84,12 +105,28 @@ const salesInvoiceSlice = createSlice({
             state.searchSalesInvResp = null;
             state.searchSalesInvError = action.error;
         })
+        .addCase(createIncomingPayment.pending, (state, action) => {
+            state.createIncomingPaymentLoading = true;
+            state.createIncomingPaymentResp = null;
+            state.createIncomingPaymentErr = null;
+        })
+        .addCase(createIncomingPayment.fulfilled, (state, action) => {
+            state.createIncomingPaymentLoading = false;
+            state.createIncomingPaymentResp = action.payload;
+            state.createIncomingPaymentErr = null;
+        })
+        .addCase(createIncomingPayment.rejected, (state, action) => {
+            state.createIncomingPaymentLoading = false;
+            state.createIncomingPaymentResp = null;
+            state.createIncomingPaymentErr = action.error;
+        })
     }
 });
 
 export const {
     resetCreateSalesInvError, resetCreateSalesInvLoading, resetCreateSalesInvResp,
-    resetSearchSalesInvLoading, resetSearchSalesInvResp, resetSearchSalesinvError
+    resetSearchSalesInvLoading, resetSearchSalesInvResp, resetSearchSalesinvError,
+    resetCreateIncomingPaymentLoading, resetCreateIncomingPaymentResp, resetCreateIncomingPaymentError
 } = salesInvoiceSlice.actions;
 
 export default salesInvoiceSlice.reducer;

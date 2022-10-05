@@ -129,9 +129,9 @@ function Row(props) {
     const { row } = props;
     const router = useRouter();
     const [open, setOpen] = React.useState(false);
-    const handleOpenDetailSo = () => {
-        const detailSoUrl = `/sales-order/info/${row.id}`;
-        router.push(detailSoUrl)
+    const [openCreateIpForm, setOpenCreateIpForm] = React.useState(false);
+    const handleCreateIncomingPayment = () => {
+        setOpenCreateIpForm(true);
     }
     return (
         <React.Fragment>
@@ -148,21 +148,47 @@ function Row(props) {
                 <TableCell component="th" scope="row">
                     {row.soNumber}
                 </TableCell>
-                <TableCell align="right">{row.soStatus}</TableCell>
-                <TableCell align="right">{dateFns.format(new Date(row.soDate), "yyyy-MM-dd")}</TableCell>
-                <TableCell align="right">{row.customerName}</TableCell>
-                <TableCell align="right">{row.grandDiscount}</TableCell>
-                <TableCell align="right">{row.totalAmount}</TableCell>
-                <TableCell align="right">{row.grandTotal}</TableCell>
-                <TableCell align="right">{row.taxAmount}</TableCell>
-                <TableCell align="right">{row.afterTaxAmount}</TableCell>
-                <TableCell><Button onClick={handleOpenDetailSo}>Detail So</Button></TableCell>
+                <TableCell>{row.invNumber}</TableCell>
+                <TableCell>{row.invStatus}</TableCell>
+                <TableCell>{dateFns.format(new Date(row.invoiceDate), "yyyy-MM-dd")}</TableCell>
+                <TableCell>{dateFns.format(new Date(row.paymentDueDate), "yyyy-MM-dd")}</TableCell>
+                <TableCell>{row.customerName}</TableCell>
+                <TableCell>{row.customerPhone}</TableCell>
+                <TableCell>{row.invoiceAmount}</TableCell>
+                <TableCell>{row.paidAmount}</TableCell>
+                <TableCell>{row.unpaidAmount}</TableCell>
+
+                <TableCell><Button onClick={handleCreateIncomingPayment}>Incoming Payment</Button></TableCell>
             </TableRow>
             <TableRow>
                 <TableCell sx={{ paddingBottom: 0, paddingTop: 0 }} colSpan={11}>
                     <Collapse in={open} timeout="auto" unmountOnExit>
-                        <Box sx={{ margin: 1 }}>
-                            <Typography>Detail Sales Order</Typography>
+                        <Box sx={{ margin: 1, padding: 1 }} border={1} borderRadius={1} borderColor="#cccccc">
+                            <Typography fontWeight={600} fontSize={16}>Detail Invoice</Typography>
+                            <TableContainer>
+                                <Table sx={{ minWidth: 500 }} aria-label="custom pagination table" size='small'>
+                                    <TableHead>
+                                        <TableRow>
+                                            <TableCell>Incoming Payment Number</TableCell>
+                                            <TableCell>Payment Amount</TableCell>
+                                            <TableCell>Payment method</TableCell>
+                                            <TableCell>Inc. Payment Date</TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    {row.incomingPayments &&
+                                        <TableBody>
+                                            {(row.incomingPayments.length > 0) ? row.incomingPayments.map(ip => (
+                                                <TableRow key={ip.id}>
+                                                    <TableCell>{ip.ipNumber}</TableCell>
+                                                    <TableCell>{ip.paymentAmount}</TableCell>
+                                                    <TableCell>{ip.paymentMethod}</TableCell>
+                                                    <TableCell>{dateFns.format(new Date(ip.ipDate), "yyyy-MM-dd")}</TableCell>
+                                                </TableRow>
+                                            )) :
+                                                <TableRow><TableCell colSpan={3} align='center'><Typography>Incoming payment is empty</Typography></TableCell></TableRow>}
+                                        </TableBody>}
+                                </Table>
+                            </TableContainer>
                         </Box>
                     </Collapse>
                 </TableCell>
@@ -188,6 +214,15 @@ const Index = ({ session }) => {
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
+
     React.useEffect(() => {
         dispatch(searchSalesInvoice({ searchStr: searchSiStr, invoiceStatus: filterSiStatus, page: page, size: rowsPerPage, token: session.accessToken }))
         return () => {
@@ -202,6 +237,10 @@ const Index = ({ session }) => {
     const debouncedSearchSI = React.useMemo(() => debounce(handleSearchSalesInv, 300), []);
     const handleSelectSiStatus = (evt) => {
         setFilterSiStatus(evt.target.value);
+    }
+
+    const handleOpenCreateSalesInvoice = () => {
+        router.push('/sales-invoice/create-inv');
     }
     return (
         <Box component={Paper} sx={{
@@ -218,6 +257,7 @@ const Index = ({ session }) => {
                 alignItems: 'center',
                 padding: 1
             }}>
+
                 <Box sx={{
                     display: 'flex',
                     flexDirection: 'row',
@@ -246,6 +286,56 @@ const Index = ({ session }) => {
                         </Select>
                     </FormControl>
                 </Box>
+                <Button type='button' variant='contained' onClick={handleOpenCreateSalesInvoice}>Create Invoice</Button>
+            </Box>
+            <Box>
+                <TableContainer>
+                    <Table sx={{ minWidth: 500 }} aria-label="custom pagination table" size='small'>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell align="right"></TableCell>
+                                <TableCell>SO Number</TableCell>
+                                <TableCell>Inv Number</TableCell>
+                                <TableCell>Inv Status</TableCell>
+                                <TableCell>Inv Create Date</TableCell>
+                                <TableCell>Inv Due Date</TableCell>
+                                <TableCell>Customer Name</TableCell>
+                                <TableCell>Customer Phone</TableCell>
+                                <TableCell>Inv Amount</TableCell>
+                                <TableCell>Paid Amount</TableCell>
+                                <TableCell>Unpaid Amount</TableCell>
+                                <TableCell></TableCell>
+                            </TableRow>
+                        </TableHead>
+                        {searchSalesInvResp &&
+                            <TableBody>
+                                {(searchSalesInvResp.data.length > 0) ? searchSalesInvResp.data.map(row => (
+                                    <Row key={row?.id} row={row} />
+                                )) :
+                                    <TableRow><TableCell colSpan={11} align='center'><Typography>Sales invoice is empty</Typography></TableCell></TableRow>}
+                            </TableBody>}
+                        <TableFooter>
+                            <TableRow>
+                                <TablePagination
+                                    rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+                                    colSpan={11}
+                                    count={searchSalesInvResp?.totalRecords == undefined ? 0 : searchSalesInvResp?.totalRecords}
+                                    rowsPerPage={rowsPerPage}
+                                    page={searchSalesInvResp?.totalRecords == undefined ? 0 : page}
+                                    SelectProps={{
+                                        inputProps: {
+                                            'aria-label': 'rows per page',
+                                        },
+                                        native: true,
+                                    }}
+                                    onPageChange={handleChangePage}
+                                    onRowsPerPageChange={handleChangeRowsPerPage}
+                                    ActionsComponent={TablePaginationActions}
+                                />
+                            </TableRow>
+                        </TableFooter>
+                    </Table>
+                </TableContainer>
             </Box>
             {console.log(searchSalesInvResp)}
         </Box>);
