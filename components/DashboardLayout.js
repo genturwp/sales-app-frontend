@@ -17,6 +17,15 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
 import MailIcon from '@mui/icons-material/Mail';
+import HomeIcon from '@mui/icons-material/Home';
+import Link from 'next/link';
+import PointOfSaleIcon from '@mui/icons-material/PointOfSale';
+import LocalShippingIcon from '@mui/icons-material/LocalShipping';
+import InventoryIcon from '@mui/icons-material/Inventory';
+import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
+import FactCheckIcon from '@mui/icons-material/FactCheck';
+import PriceChangeIcon from '@mui/icons-material/PriceChange';
+import PaymentsIcon from '@mui/icons-material/Payments';
 
 const drawerWidth = 240;
 
@@ -85,7 +94,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
   }),
 );
 
-export default function DashboardLayout({children}) {
+export default function DashboardLayout({ children }) {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
 
@@ -115,7 +124,7 @@ export default function DashboardLayout({children}) {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap component="div">
-            Mini variant drawer
+            Aplikasi Penjualan
           </Typography>
         </Toolbar>
       </AppBar>
@@ -127,15 +136,13 @@ export default function DashboardLayout({children}) {
         </DrawerHeader>
         <Divider />
         <List>
-          {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
+          <Link href="/home" passHref>
             <ListItemButton
-              key={text}
               sx={{
                 minHeight: 48,
                 justifyContent: open ? 'initial' : 'center',
                 px: 2.5,
-              }}
-            >
+              }}>
               <ListItemIcon
                 sx={{
                   minWidth: 0,
@@ -143,23 +150,19 @@ export default function DashboardLayout({children}) {
                   justifyContent: 'center',
                 }}
               >
-                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                <HomeIcon />
               </ListItemIcon>
-              <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
+              <ListItemText primary="Home" sx={{ opacity: open ? 1 : 0 }} />
             </ListItemButton>
-          ))}
-        </List>
-        <Divider />
-        <List>
-          {['All mail', 'Trash', 'Spam'].map((text, index) => (
+          </Link>
+          <Divider/>
+          <Link href="/sales-order" passHref>
             <ListItemButton
-              key={text}
               sx={{
                 minHeight: 48,
                 justifyContent: open ? 'initial' : 'center',
                 px: 2.5,
-              }}
-            >
+              }}>
               <ListItemIcon
                 sx={{
                   minWidth: 0,
@@ -167,12 +170,129 @@ export default function DashboardLayout({children}) {
                   justifyContent: 'center',
                 }}
               >
-                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                <PointOfSaleIcon />
               </ListItemIcon>
-              <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
+              <ListItemText primary="Sales Order" sx={{ opacity: open ? 1 : 0 }} />
             </ListItemButton>
-          ))}
-        </List>
+          </Link>
+          <Link href="/sales-invoice" passHref>
+            <ListItemButton
+              sx={{
+                minHeight: 48,
+                justifyContent: open ? 'initial' : 'center',
+                px: 2.5,
+              }}>
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  mr: open ? 3 : 'auto',
+                  justifyContent: 'center',
+                }}
+              >
+                <PaymentsIcon />
+              </ListItemIcon>
+              <ListItemText primary="Invoice" sx={{ opacity: open ? 1 : 0 }} />
+            </ListItemButton>
+          </Link>
+          <Link href="/delivery-order" passHref>
+            <ListItemButton
+              sx={{
+                minHeight: 48,
+                justifyContent: open ? 'initial' : 'center',
+                px: 2.5,
+              }}>
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  mr: open ? 3 : 'auto',
+                  justifyContent: 'center',
+                }}
+              >
+                <LocalShippingIcon />
+              </ListItemIcon>
+              <ListItemText primary="Delivery Order" sx={{ opacity: open ? 1 : 0 }} />
+            </ListItemButton>
+          </Link>
+          <Divider/>
+          <Link href="/inventory-management" passHref>
+            <ListItemButton
+              sx={{
+                minHeight: 48,
+                justifyContent: open ? 'initial' : 'center',
+                px: 2.5,
+              }}>
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  mr: open ? 3 : 'auto',
+                  justifyContent: 'center',
+                }}
+              >
+                <InventoryIcon />
+              </ListItemIcon>
+              <ListItemText primary="Inventory" sx={{ opacity: open ? 1 : 0 }} />
+            </ListItemButton>
+          </Link>
+          <Link href="/inventory-management/inventory-movement" passHref>
+            <ListItemButton
+              sx={{
+                minHeight: 48,
+                justifyContent: open ? 'initial' : 'center',
+                px: 2.5,
+              }}>
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  mr: open ? 3 : 'auto',
+                  justifyContent: 'center',
+                }}
+              >
+                <SwapHorizIcon />
+              </ListItemIcon>
+              <ListItemText primary="Inv. Movement" sx={{ opacity: open ? 1 : 0 }} />
+            </ListItemButton>
+          </Link>
+          <Link href="/inventory-management/stock-opname" passHref>
+            <ListItemButton
+              sx={{
+                minHeight: 48,
+                justifyContent: open ? 'initial' : 'center',
+                px: 2.5,
+              }}>
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  mr: open ? 3 : 'auto',
+                  justifyContent: 'center',
+                }}
+              >
+                <FactCheckIcon />
+              </ListItemIcon>
+              <ListItemText primary="Stock Opname" sx={{ opacity: open ? 1 : 0 }} />
+            </ListItemButton>
+          </Link>
+          <Divider/>
+          <Link href="/pricing-management" passHref>
+            <ListItemButton
+              sx={{
+                minHeight: 48,
+                justifyContent: open ? 'initial' : 'center',
+                px: 2.5,
+              }}>
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  mr: open ? 3 : 'auto',
+                  justifyContent: 'center',
+                }}
+              >
+                <PriceChangeIcon />
+              </ListItemIcon>
+              <ListItemText primary="Pricing" sx={{ opacity: open ? 1 : 0 }} />
+            </ListItemButton>
+          </Link>
+          
+        </List>        
       </Drawer>
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <DrawerHeader />

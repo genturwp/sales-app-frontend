@@ -1,16 +1,13 @@
-import React from 'react';
+import * as React from 'react';
+import DashboardLayout from '../../components/DashboardLayout';
+import { signOut, getSession } from 'next-auth/react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import { useSession, signOut, getSession } from 'next-auth/react';
 import Button from '@mui/material/Button';
-import DashboardLayout from '../components/DashboardLayout';
 
-const Home = () => {
-
-    const session = useSession();
+const Index = ({ session }) => {
 
     const logout = () => {
-        console.log("logout dong");
         signOut();
     }
 
@@ -23,7 +20,7 @@ const Home = () => {
     );
 }
 
-Home.getLayout = function getLayout(page) {
+Index.getLayout = function getLayout(page) {
     return (
         <DashboardLayout>{page}</DashboardLayout>
     );
@@ -39,10 +36,10 @@ export async function getServerSideProps(context) {
             }
         };
     }
-    
+
     return {
         props: { session }
     }
 }
 
-export default Home;
+export default Index;

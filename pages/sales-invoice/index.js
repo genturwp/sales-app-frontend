@@ -150,7 +150,7 @@ function Row(props) {
                 </TableCell>
                 <TableCell>{row.invNumber}</TableCell>
                 <TableCell>{row.invStatus}</TableCell>
-                <TableCell>{dateFns.format(new Date(row.invoiceDate), "yyyy-MM-dd")}</TableCell>
+                <TableCell>{row.invoiceDate != null ? dateFns.format(new Date(row.invoiceDate), "yyyy-MM-dd"): ''}</TableCell>
                 <TableCell>{dateFns.format(new Date(row.paymentDueDate), "yyyy-MM-dd")}</TableCell>
                 <TableCell>{row.customerName}</TableCell>
                 <TableCell>{row.customerPhone}</TableCell>
@@ -161,7 +161,7 @@ function Row(props) {
                 <TableCell><Button onClick={handleCreateIncomingPayment}>Incoming Payment</Button></TableCell>
             </TableRow>
             <TableRow>
-                <TableCell sx={{ paddingBottom: 0, paddingTop: 0 }} colSpan={11}>
+                <TableCell sx={{ paddingBottom: 0, paddingTop: 0 }} colSpan={12}>
                     <Collapse in={open} timeout="auto" unmountOnExit>
                         <Box sx={{ margin: 1, padding: 1 }} border={1} borderRadius={1} borderColor="#cccccc">
                             <Typography fontWeight={600} fontSize={16}>Detail Invoice</Typography>
@@ -185,7 +185,7 @@ function Row(props) {
                                                     <TableCell>{dateFns.format(new Date(ip.ipDate), "yyyy-MM-dd")}</TableCell>
                                                 </TableRow>
                                             )) :
-                                                <TableRow><TableCell colSpan={3} align='center'><Typography>Incoming payment is empty</Typography></TableCell></TableRow>}
+                                                <TableRow><TableCell colSpan={4} align='center'><Typography>Incoming payment is empty</Typography></TableCell></TableRow>}
                                         </TableBody>}
                                 </Table>
                             </TableContainer>

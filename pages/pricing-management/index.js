@@ -340,7 +340,7 @@ const Index = ({ session }) => {
                             <TableCell></TableCell>
                         </TableRow>
                     </TableHead>
-                    
+                    {console.log(findPriceWithFilterResp)}
                     {findPriceWithFilterResp &&
                         <TableBody>
                             {(findPriceWithFilterResp.data.length > 0) ? findPriceWithFilterResp.data.map(row => (
@@ -349,7 +349,7 @@ const Index = ({ session }) => {
                                     <TableCell>{row?.itemCode}</TableCell>
                                     <TableCell>{row?.stockType}</TableCell>
                                     <TableCell><Switch checked={row?.isPriceActive} onChange={evt => enableOrDisableItemPrice(row)}/></TableCell>
-                                    <TableCell>{row?.priceEffectiveDate}</TableCell>
+                                    <TableCell>{row.priceEffectiveDate != null ? dateFns.format(new Date(row.priceEffectiveDate), "yyyy-MM-dd"): ``}</TableCell>
                                     <TableCell>{editPriceId === row.id ? <TextField size='small' type='number' value={editedPrice} onChange={(evt) => handleChangePrice(evt.target.value)}/> : <Typography>{row?.price}</Typography>}</TableCell>
                                     <TableCell>{showCreateOrUpdatePriceButton(row)}</TableCell>
                                 </TableRow>))
