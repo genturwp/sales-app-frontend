@@ -26,6 +26,7 @@ import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import FactCheckIcon from '@mui/icons-material/FactCheck';
 import PriceChangeIcon from '@mui/icons-material/PriceChange';
 import PaymentsIcon from '@mui/icons-material/Payments';
+import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 
 const drawerWidth = 240;
 
@@ -289,6 +290,25 @@ export default function DashboardLayout({ children }) {
                 <PriceChangeIcon />
               </ListItemIcon>
               <ListItemText primary="Pricing" sx={{ opacity: open ? 1 : 0 }} />
+            </ListItemButton>
+          </Link>
+          <Link href="/bank-reference" passHref>
+            <ListItemButton
+              sx={{
+                minHeight: 48,
+                justifyContent: open ? 'initial' : 'center',
+                px: 2.5,
+              }}>
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  mr: open ? 3 : 'auto',
+                  justifyContent: 'center',
+                }}
+              >
+                <AccountBalanceWalletIcon />
+              </ListItemIcon>
+              <ListItemText primary="Bank Reference" sx={{ opacity: open ? 1 : 0 }} />
             </ListItemButton>
           </Link>
           

@@ -13,8 +13,7 @@ const Index = ({ session }) => {
 
     return (
         <Box>
-            <Typography>Ini cuma test home</Typography>
-            {console.log(session)}
+            <Typography>Home Page</Typography>
             <Button variant='contained' onClick={() => logout()}>Logout</Button>
         </Box>
     );

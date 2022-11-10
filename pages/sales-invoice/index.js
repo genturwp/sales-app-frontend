@@ -40,6 +40,7 @@ import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
+import Chip from '@mui/material/Chip';
 
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -50,7 +51,9 @@ import { debounce } from 'lodash';
 
 import {
     createSalesInvoice, resetCreateSalesInvError, resetCreateSalesInvLoading, resetCreateSalesInvResp,
-    searchSalesInvoice, resetSearchSalesInvLoading, resetSearchSalesInvResp, resetSearchSalesinvError
+    searchSalesInvoice, resetSearchSalesInvLoading, resetSearchSalesInvResp, resetSearchSalesinvError,
+    createIncomingPayment, resetCreateIncomingPaymentError, resetCreateIncomingPaymentLoading, resetCreateIncomingPaymentResp,
+    setSelectedSalesInvoice
 } from '../../src/redux/slices/sales-invoice-slice';
 
 function TablePaginationActions(props) {
@@ -129,10 +132,13 @@ function Row(props) {
     const { row } = props;
     const router = useRouter();
     const [open, setOpen] = React.useState(false);
-    const [openCreateIpForm, setOpenCreateIpForm] = React.useState(false);
-    const handleCreateIncomingPayment = () => {
-        setOpenCreateIpForm(true);
+    const handleCreateIncomingPayment = (row) => {
+
+        const detailSalesInvoice = `/sales-invoice/detail/${row.id}`;
+        router.push(detailSalesInvoice);
     }
+    const dispatch = useDispatch();
+
     return (
         <React.Fragment>
             <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
@@ -149,8 +155,8 @@ function Row(props) {
                     {row.soNumber}
                 </TableCell>
                 <TableCell>{row.invNumber}</TableCell>
-                <TableCell>{row.invStatus}</TableCell>
-                <TableCell>{row.invoiceDate != null ? dateFns.format(new Date(row.invoiceDate), "yyyy-MM-dd"): ''}</TableCell>
+                <TableCell><Chip label={row.invStatus} color='primary'/></TableCell>
+                <TableCell>{row.invoiceDate != null ? dateFns.format(new Date(row.invoiceDate), "yyyy-MM-dd") : ''}</TableCell>
                 <TableCell>{dateFns.format(new Date(row.paymentDueDate), "yyyy-MM-dd")}</TableCell>
                 <TableCell>{row.customerName}</TableCell>
                 <TableCell>{row.customerPhone}</TableCell>
@@ -158,21 +164,23 @@ function Row(props) {
                 <TableCell>{row.paidAmount}</TableCell>
                 <TableCell>{row.unpaidAmount}</TableCell>
 
-                <TableCell><Button onClick={handleCreateIncomingPayment}>Incoming Payment</Button></TableCell>
+                <TableCell><Button onClick={() => handleCreateIncomingPayment(row)}>Incoming Payment</Button></TableCell>
             </TableRow>
             <TableRow>
                 <TableCell sx={{ paddingBottom: 0, paddingTop: 0 }} colSpan={12}>
                     <Collapse in={open} timeout="auto" unmountOnExit>
                         <Box sx={{ margin: 1, padding: 1 }} border={1} borderRadius={1} borderColor="#cccccc">
-                            <Typography fontWeight={600} fontSize={16}>Detail Invoice</Typography>
+                            <Typography fontWeight={600} fontSize={16}>Detail Payment</Typography>
                             <TableContainer>
                                 <Table sx={{ minWidth: 500 }} aria-label="custom pagination table" size='small'>
                                     <TableHead>
                                         <TableRow>
-                                            <TableCell>Incoming Payment Number</TableCell>
+                                            <TableCell>Inc. Payment No.</TableCell>
+                                            <TableCell>Inc. Payment Date</TableCell>
                                             <TableCell>Payment Amount</TableCell>
                                             <TableCell>Payment method</TableCell>
-                                            <TableCell>Inc. Payment Date</TableCell>
+                                            <TableCell>Cust. Bank</TableCell>
+                                            <TableCell>Receive. Bank</TableCell>
                                         </TableRow>
                                     </TableHead>
                                     {row.incomingPayments &&
@@ -180,9 +188,18 @@ function Row(props) {
                                             {(row.incomingPayments.length > 0) ? row.incomingPayments.map(ip => (
                                                 <TableRow key={ip.id}>
                                                     <TableCell>{ip.ipNumber}</TableCell>
+                                                    <TableCell>{dateFns.format(new Date(ip.ipDate), "yyyy-MM-dd")}</TableCell>
                                                     <TableCell>{ip.paymentAmount}</TableCell>
                                                     <TableCell>{ip.paymentMethod}</TableCell>
-                                                    <TableCell>{dateFns.format(new Date(ip.ipDate), "yyyy-MM-dd")}</TableCell>
+                                                    {ip.paymentMethod == "TRANSFER" ? <><TableCell sx={{
+                                                        fontSize: 12
+                                                    }}>{`${ip.custBankAccountName}-${ip.custBankName}-${ip.custBankAccountNo}`}</TableCell>
+                                                        <TableCell sx={{
+                                                            fontSize: 12
+                                                        }}>{`${ip.ownerBankAccountName}-${ip.ownerBankName}-${ip.ownerBankAccountNo}`}</TableCell></>
+                                                        : <>
+                                                            <TableCell></TableCell><TableCell></TableCell>
+                                                        </>}
                                                 </TableRow>
                                             )) :
                                                 <TableRow><TableCell colSpan={4} align='center'><Typography>Incoming payment is empty</Typography></TableCell></TableRow>}
@@ -207,12 +224,22 @@ const Index = ({ session }) => {
         searchSalesInvLoading,
         searchSalesInvResp,
         searchSalesInvError,
+        selectedSalesInvoice,
     } = useSelector((state) => state.salesInvoice);
 
     const [searchSiStr, setSearchSiStr] = React.useState('');
     const [filterSiStatus, setFilterSiStatus] = React.useState('');
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
+    const [openIncomingPaymentForm, setOpenIncomingPaymentForm] = React.useState(false);
+
+    React.useEffect(() => {
+        if (selectedSalesInvoice == null) {
+            setOpenIncomingPaymentForm(false);
+        } else {
+            setOpenIncomingPaymentForm(true);
+        }
+    }, [selectedSalesInvoice]);
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -247,6 +274,7 @@ const Index = ({ session }) => {
             display: 'flex',
             flexDirection: 'column'
         }}>
+
             <Box sx={{ display: 'flex', padding: 1 }}>
                 <Typography fontWeight={600}>Sales Invoices</Typography>
             </Box>
@@ -337,7 +365,7 @@ const Index = ({ session }) => {
                     </Table>
                 </TableContainer>
             </Box>
-            {console.log(searchSalesInvResp)}
+
         </Box>);
 }
 

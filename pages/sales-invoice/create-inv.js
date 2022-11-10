@@ -188,7 +188,6 @@ const CreateInvoice = ({ session }) => {
                             />
                         </LocalizationProvider>
                         <TextField size='small' type='number' label='Invoice amount' margin='dense' value={invoiceAmount || ''} onChange={(evt) => setInvoiceAmount(evt.target.value)} />
-                        {console.log(selectedSo)}
                     </Box>
                 </Box>
             </Box>
@@ -228,7 +227,7 @@ const CreateInvoice = ({ session }) => {
                                     <Typography fontSize={16} fontWeight={500}>Sub total</Typography>
                                 </TableCell>
                                 <TableCell>
-                                    <Typography fontSize={14} fontWeight={500} align='right'>{selectedSo?.totalAmount}</Typography>
+                                    <Typography fontSize={14} fontWeight={500} align='right'>{selectedSo?.totalAmount||''}</Typography>
                                 </TableCell>
                             </TableRow>
                             <TableRow>
@@ -236,10 +235,10 @@ const CreateInvoice = ({ session }) => {
                                     <Typography fontSize={16} fontWeight={500}>Grand Discount</Typography>
                                 </TableCell>
                                 <TableCell>
-                                    <Typography fontSize={14} fontWeight={500} align='right'>{`${selectedSo?.grandDiscount} %`}</Typography>
+                                    <Typography fontSize={14} fontWeight={500} align='right'>{`${selectedSo?.grandDiscount || ''} %`}</Typography>
                                 </TableCell>
                                 <TableCell>
-                                    <Typography fontSize={14} fontWeight={500} align='right'>{`${selectedSo?.grandDiscountAmount}`}</Typography>
+                                    <Typography fontSize={14} fontWeight={500} align='right'>{`${selectedSo?.grandDiscountAmount || ''}`}</Typography>
                                 </TableCell>
                             </TableRow>
                             <TableRow>
@@ -271,7 +270,7 @@ const CreateInvoice = ({ session }) => {
                 </TableContainer>
             </Box>
             <Box sx={{mt: 1}}>
-                <Button type="button" variant='contained' onClick={onSaveSalesInvoice}>Save</Button>
+                <Button type="button" variant='contained' onClick={onSaveSalesInvoice}>Create Invoice</Button>
             </Box>
         </Box>
     )

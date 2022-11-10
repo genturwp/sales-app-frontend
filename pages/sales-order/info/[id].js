@@ -75,9 +75,9 @@ const SoDraft = ({ session }) => {
                             <Chip label={findSOByIdResp?.soStatus} color='primary' size='small' sx={{ fontWeight: 500 }} />
                         </Box>
                     </Box>
-                    <Box sx={{display: 'flex', flexDirection: 'row', justifyContent: 'space-between', minWidth: 210}}>
-                        <Box>
-                            <Button variant='contained' size='small' onClick={() => router.push('/sales-order')}>Sales Order</Button>
+                    <Box sx={{display: 'flex', flexDirection: 'row', minWidth: 190}}>
+                        <Box sx={{mr: 1}}>
+                            <Button variant='contained' size='small' onClick={() => router.push('/sales-order')}>Back</Button>
                         </Box>
                         <Box>
                             <Button variant='contained' size='small' onClick={updateSoToOpen} disabled={findSOByIdResp?.soStatus === 'OPEN'}>Create SO</Button>

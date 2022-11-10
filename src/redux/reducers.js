@@ -13,6 +13,7 @@ import customerSlice from './slices/customer-slice';
 import salesOrderSlice from "./slices/sales-order-slice";
 import deliveryOrderSlice from "./slices/delivery-order-slice";
 import salesInvoiceSlice from "./slices/sales-invoice-slice";
+import bankReferenceSlice from "./slices/bank-reference-slice";
 
 const rootReducer = combineReducers({
     userManagement: userManagementSlice,
@@ -27,7 +28,8 @@ const rootReducer = combineReducers({
     customer: customerSlice,
     salesOrder: salesOrderSlice,
     deliveryOrder: deliveryOrderSlice,
-    salesInvoice: salesInvoiceSlice
+    salesInvoice: salesInvoiceSlice,
+    bankReference: bankReferenceSlice
 });
 
 export default rootReducer;
