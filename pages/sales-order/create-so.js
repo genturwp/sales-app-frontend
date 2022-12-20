@@ -174,6 +174,14 @@ const CreateSo = ({ session }) => {
         setSalesItems(salesItms);
     }
 
+    const setDiscountAmount = (idx, discountAmount) => {
+        let salesItms = [...salesItems];
+        let discPercentage = (discountAmount / salesItms[idx].amount) * 100;
+        let total = salesItms[idx].amount - discountAmount;
+        salesItms[idx] = { ...salesItms[idx], itemDiscount: discPercentage, itemDiscountAmount: parseFloat(discountAmount), total: total };
+        setSalesItems(salesItms);
+    }
+
     const removeSalesItem = (idx) => {
         let salesItms = [...salesItems];
         salesItms.splice(idx, 1);
@@ -200,7 +208,7 @@ const CreateSo = ({ session }) => {
 
     const calculateTax = () => {
         if (tax) {
-            let taxAmount = calculateGrandTotal() * 0.1;
+            let taxAmount = calculateGrandTotal() * 0.11;
             return taxAmount;
         }
         return 0;
@@ -594,7 +602,7 @@ const CreateSo = ({ session }) => {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            
+
                             {(salesItems.length === 0) && <TableRow><TableCell colSpan={11} align='center'>Sales item is empty</TableCell></TableRow>}
                             {(salesItems.length > 0) && salesItems.map((row, idx) => (
                                 <TableRow key={idx}>
@@ -659,7 +667,14 @@ const CreateSo = ({ session }) => {
                                             }
                                         }} sx={{ width: 100, fontSize: 14 }} size="small" margin='dense' value={row.itemDiscount} type='number' onChange={(evt) => setItemDiscount(idx, evt.target.value)} />
                                     </TableCell>
-                                    <TableCell align='right'><Typography fontSize={14}>{row.itemDiscountAmount}</Typography></TableCell>
+                                    <TableCell align='right'>
+                                        <TextField onInput={(evt) => {
+                                            let inp = evt.target.value;
+                                            if (inp < 0) {
+                                                evt.target.value = -1 * inp;
+                                            }
+                                        }} sx={{ width: 100, fontSize: 14 }} size="small" margin='dense' value={row.itemDiscountAmount} type='number' onChange={(evt) => setDiscountAmount(idx, evt.target.value)} />
+                                    </TableCell>
                                     <TableCell align='right'><Typography fontSize={14}>{row.amount}</Typography></TableCell>
                                     <TableCell align='right'><Typography fontSize={14} fontWeight={500}>{row.total}</Typography></TableCell>
                                     <TableCell>

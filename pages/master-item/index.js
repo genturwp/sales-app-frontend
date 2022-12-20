@@ -49,9 +49,7 @@ import { useForm, Controller } from 'react-hook-form';
 
 import { useSelector, useDispatch } from 'react-redux';
 
-import { createMasterItem, searchMasterItem, searchMasterItemInv, updateMasterItem, 
-    resetCreateMasteritemResp, resetCreateMasterItemError,
-    searchInventoryItem } from '../../src/redux/slices/master-item-slice';
+import { createMasterItem, searchMasterItem, searchMasterItemInv, updateMasterItem, resetCreateMasteritemResp, resetCreateMasterItemError, resetUpdateMasterItemError, resetUpdateMasterItemResp } from '../../src/redux/slices/master-item-slice';
 import { createWarehouse, searchWarehouse, updateWarehouse, resetCreateWarehouseResp, resetCreateWarehouseError } from '../../src/redux/slices/warehouse-slice';
 import { createItemCategory, searchItemCategory, resetCreateItemCategoryResp, resetCreateItemCategoryError } from '../../src/redux/slices/item-category-slice';
 import { createItemUnit, searchItemUnit, resetCreateItemUnitResp, resetCreateItemUnitError } from '../../src/redux/slices/item-unit-slice';
@@ -129,20 +127,79 @@ const MenuProps = {
     },
 };
 
-
 const Index = ({ session }) => {
-
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
     const [searchStr, setSearchStr] = React.useState('');
+    const [openMasterItemForm, setOpenMasterItemForm] = React.useState(false);
+    const [openItemCategoryForm, setOpenItemCategoryForm] = React.useState(false);
+    const [itemCategorySearchStr, setItemCategorySearchStr] = React.useState('');
+    const [itemUnitSearchStr, setItemUnitSearchStr] = React.useState('');
+    const [openItemUnitForm, setOpenItemUnitForm] = React.useState(false);
+    const [masterItemSearchStr, setMasterItemSearchStr] = React.useState('');
+    const [openUpdateMasterItemForm, setOpenUpdateMasterItemForm] = React.useState(false);
 
-    const { control: inventoryControl,
-        handleSubmit: inventoryHandleSubmit,
-        formState: { errors: inventoryErrors },
-        reset: inventoryReset,
-        setValue: inventorySetValue,
-        getValues: inventoryGetValues,
-        register: inventoryRegister } = useForm();
+    const dispatch = useDispatch();
+
+    const { createMasterItemLoading,
+        createMasterItemResp,
+        createMasterItemError,
+        searchMasterItemLoading,
+        searchMasterItemResp,
+        searchMasterItemError,
+        searchMasterItemInvLoading,
+        searchMasterItemInvResp,
+        searchMasterItemInvError,
+        updateMasterItemLoading,
+        updateMasterItemResp,
+        updateMasterItemError } = useSelector((state) => state.masterItem);
+
+    const {
+        createItemCategoryLoading,
+        createItemCategoryResp,
+        createItemCategoryError,
+        searchItemCategoryLoading,
+        searchItemCategoryResp,
+        searchItemCategoryError,
+    } = useSelector((state) => state.itemCategory);
+
+    const {
+        createItemUnitLoading,
+        createItemUnitResp,
+        createItemUnitError,
+        searchItemUnitLoading,
+        searchItemUnitResp,
+        searchItemUnitError,
+    } = useSelector((state) => state.itemUnit);
+
+    React.useEffect(() => {
+        dispatch(searchMasterItemInv({ token: session.accessToken, page: page, size: rowsPerPage, searchStr: searchStr }));
+    }, [page, rowsPerPage, searchStr, session]);
+
+    React.useEffect(() => {
+        dispatch(searchItemCategory({ token: session.accessToken, searchStr: itemCategorySearchStr }));
+    }, [itemCategorySearchStr, session]);
+
+    React.useEffect(() => {
+        dispatch(searchItemUnit({ token: session.accessToken, searchStr: itemUnitSearchStr }));
+    }, [itemUnitSearchStr, session]);
+
+    React.useEffect(() => {
+        dispatch(searchMasterItem({ token: session.accessToken, searchStr: masterItemSearchStr }));
+    }, [masterItemSearchStr, session]);
+
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
+    const handleSearchInventory = (evt) => {
+        setSearchStr(evt.target.value);
+    }
+    const debouncedSearchInventory = React.useMemo(() => debounce(handleSearchInventory, 300), []);
 
     const { control: masterItemControl,
         handleSubmit: masterItemHandleSubmit,
@@ -165,154 +222,6 @@ const Index = ({ session }) => {
         setValue: itemUnitSetValue,
         register: itemUnitRegister } = useForm();
 
-    const { control: warehouseControl,
-        handleSubmit: warehouseHandleSubmit,
-        formState: { errors: warehouseErrors },
-        reset: warehouseReset } = useForm();
-
-    const dispatch = useDispatch();
-    const { createMasterItemLoading,
-        createMasterItemResp,
-        createMasterItemError,
-        searchMasterItemLoading,
-        searchMasterItemResp,
-        searchMasterItemError,
-        searchMasterItemInvLoading,
-        searchMasterItemInvResp,
-        searchMasterItemInvError,
-        updateMasterItemLoading,
-        updateMasterItemResp,
-        updateMasterItemError,
-        searchInventoryItemLoading,
-        searchInventoryItemResp,
-        searchInventoryItemError } = useSelector((state) => state.masterItem);
-
-    const {
-        createWarehouseLoading,
-        createWarehouseResp,
-        createWarehouseError,
-        searchWarehouseLoading,
-        searchWarehouseResp,
-        searchWarehouseError,
-        updateWarehouseLoading,
-        updateWarehouseResp,
-        updateWarehouseError,
-    } = useSelector((state) => state.warehouse);
-
-    const {
-        createItemCategoryLoading,
-        createItemCategoryResp,
-        createItemCategoryError,
-        searchItemCategoryLoading,
-        searchItemCategoryResp,
-        searchItemCategoryError,
-    } = useSelector((state) => state.itemCategory);
-
-    const {
-        createItemUnitLoading,
-        createItemUnitResp,
-        createItemUnitError,
-        searchItemUnitLoading,
-        searchItemUnitResp,
-        searchItemUnitError,
-    } = useSelector((state) => state.itemUnit);
-
-    const {
-        createInventoryLoading,
-        createInventoryResp,
-        createInventoryError,
-        searchInventoryLoading,
-        searchInventoryResp,
-        searchInventoryError,
-    } = useSelector((state) => state.inventory);
-
-    const [openInventoryForm, setOpenInventoryForm] = React.useState(false);
-    const [masterItemSearchStr, setMasterItemSearchStr] = React.useState('');
-    const [warehouses, setWarehouses] = React.useState([]);
-    const [warehouseSearchStr, setWarehouseSearchStr] = React.useState('');
-    const [openMasterItemForm, setOpenMasterItemForm] = React.useState(false);
-    const [openWarehouseForm, setOpenWarehouseForm] = React.useState(false);
-    const [itemCategorySearchStr, setItemCategorySearchStr] = React.useState('');
-    const [itemUnitSearchStr, setItemUnitSearchStr] = React.useState('');
-
-    const [openItemCategoryForm, setOpenItemCategoryForm] = React.useState(false);
-    const [openItemUnitForm, setOpenItemUnitForm] = React.useState(false);
-
-    const handleChangePage = (event, newPage) => {
-        setPage(newPage);
-    };
-
-    const handleChangeRowsPerPage = (event) => {
-        setRowsPerPage(parseInt(event.target.value, 10));
-        setPage(0);
-    };
-
-    React.useEffect(() => {
-        dispatch(searchInventoryItem({ token: session.accessToken, page: page, size: rowsPerPage, searchStr: searchStr }));
-    }, [page, rowsPerPage, searchStr, session]);
-
-    React.useEffect(() => {
-        dispatch(searchMasterItem({ token: session.accessToken, searchStr: masterItemSearchStr }));
-    }, [masterItemSearchStr, session]);
-
-    React.useEffect(() => {
-        dispatch(searchWarehouse({ token: session.accessToken, searchStr: warehouseSearchStr }));
-    }, [warehouseSearchStr, session]);
-
-    React.useEffect(() => {
-        dispatch(searchItemCategory({ token: session.accessToken, searchStr: itemCategorySearchStr }));
-    }, [itemCategorySearchStr, session]);
-
-    React.useEffect(() => {
-        dispatch(searchItemUnit({ token: session.accessToken, searchStr: itemUnitSearchStr }));
-    }, [itemUnitSearchStr, session]);
-
-    const handleSearchInventory = (evt) => {
-        setSearchStr(evt.target.value);
-    }
-    const handleOpenInventoryForm = (evt) => {
-        setOpenInventoryForm(true);
-    }
-    const handleCloseInventoryForm = () => {
-        inventoryReset({
-            masterItem: null,
-            warehouses: [],
-        });
-        dispatch(resetCreateInventoryResp());
-        dispatch(resetCreateInventoryError());
-        dispatch(searchInventoryItem({ token: session.accessToken, page: page, size: rowsPerPage, searchStr: searchStr }));
-        setOpenInventoryForm(false);
-    }
-
-    const onSaveInventory = (params) => {
-        let inventories = params.warehouses.map(val => {
-            const inventory = {
-                masterItemId: params.masterItem.id,
-                itemName: params.masterItem.itemName,
-                warehouseId: val.id,
-                warehouseName: val.warehouseName,
-                inventoryQuantity: val.inventoryQuantity
-            }
-            return inventory;
-        });
-        const createInventoryReq = {
-            masterItem: params.masterItem,
-            inventories: inventories,
-        };
-        dispatch(createInventory({ createInventoryReq: createInventoryReq, token: session.accessToken }));
-
-    }
-
-    const handleAddInitialStock = (evt, warehouse) => {
-        let updatedWarehouses = inventoryGetValues('warehouses').map(val => {
-            if (val.id === warehouse.id) {
-                val = { ...val, inventoryQuantity: parseFloat(evt.target.value) }
-            }
-            return val;
-        });
-        inventorySetValue('warehouses', updatedWarehouses);
-    }
-
     const handleCloseMasterItemFormDialog = () => {
         masterItemReset({
             itemName: '',
@@ -329,13 +238,45 @@ const Index = ({ session }) => {
             }
         });
         dispatch(resetCreateMasterItemError());
-        dispatch(resetCreateMasteritemResp())
+        dispatch(resetCreateMasteritemResp());
         setOpenMasterItemForm(false);
+        dispatch(searchMasterItemInv({ token: session.accessToken, page: page, size: rowsPerPage, searchStr: searchStr }));
     }
 
-    const onSaveMasterItem = (params) => {
-        dispatch(createMasterItem({ token: session.accessToken, data: params }));
-        dispatch(searchMasterItem({ token: session.accessToken, searchStr: masterItemSearchStr }));
+    const handleCloseUpdateMasterItemFormDialog = () => {
+        masterItemReset({
+            itemName: '',
+            itemCode: '',
+            itemDescription: '',
+            itemCategory: null,
+            stockType: '',
+            itemWeight: 0,
+            itemUnit: null,
+            dimension: {
+                width: 0,
+                length: 0,
+                height: 0
+            }
+        });
+        dispatch(resetUpdateMasterItemError());
+        dispatch(resetUpdateMasterItemResp());
+        setOpenUpdateMasterItemForm(false);
+        dispatch(searchMasterItemInv({ token: session.accessToken, page: page, size: rowsPerPage, searchStr: searchStr }));
+    }
+
+    const handleOpenUpdateMasterItemFormDialog = (masterItem) => {
+        masterItemSetValue("id", masterItem.id);
+        masterItemSetValue("itemName", masterItem.itemName);
+        masterItemSetValue("itemCode", masterItem.itemCode);
+        masterItemSetValue("itemDescription", masterItem.itemDescription);
+        masterItemSetValue("itemCategory", {id:masterItem.itemCategoryId, itemCategoryName: masterItem.itemCategoryName});
+        masterItemSetValue("stockType", masterItem.stockType);
+        masterItemSetValue("itemWeight", masterItem.itemWeight);
+        masterItemSetValue("itemUnit", {id: masterItem.itemUnitId, unitName: masterItem.unitName});
+        masterItemSetValue("dimension.width", masterItem.dimension.width);
+        masterItemSetValue("dimension.length", masterItem.dimension.length);
+        masterItemSetValue("dimension.height", masterItem.dimension.height);
+        setOpenUpdateMasterItemForm(true);
     }
 
     const handleCloseItemCategoryForm = (event) => {
@@ -345,10 +286,40 @@ const Index = ({ session }) => {
         setOpenItemCategoryForm(false);
     }
 
+    const onSaveMasterItem = (params) => {
+        console.log(params);
+        dispatch(createMasterItem({ token: session.accessToken, data: params }));
+        dispatch(searchMasterItem({ token: session.accessToken, searchStr: masterItemSearchStr }));
+    }
+
+    const onUpdateMasterItem = (params) => {
+        const masterItem = {
+            id: params.id,
+            itemName: params.itemName,
+            itemCode: params.itemCode,
+            itemDescription: params.itemDescription,
+            itemCategoryId: params.itemCategory.id,
+            stockType: params.stockType,
+            itemWeight: params.itemWeight,
+            itemUnitId: params.itemUnit.id,
+            dimension: {
+                width: params.dimension.width,
+                height: params.dimension.height,
+                length: params.dimension.length
+            },
+        };
+        dispatch(updateMasterItem({token: session.accessToken, data: masterItem}));
+        dispatch(searchMasterItem({ token: session.accessToken, searchStr: masterItemSearchStr }));
+    }
+
     const onSaveItemCategory = (params) => {
 
         dispatch(createItemCategory({ token: session.accessToken, ...params }))
         dispatch(searchItemCategory({ token: session.accessToken, searchStr: itemCategorySearchStr }))
+    }
+
+    const handleOpenMasterItemForm = () => {
+        setOpenMasterItemForm(true);
     }
 
     const handleCloseItemUnitForm = (event) => {
@@ -363,36 +334,13 @@ const Index = ({ session }) => {
         dispatch(searchItemUnit({ token: session.accessToken, searchStr: itemUnitSearchStr }));
     }
 
-    const handleCloseWarehouseForm = (event) => {
-        warehouseReset({ warehouseName: '', warehouseAddress: '', warehouseType: 'FIN' })
-        dispatch(resetCreateWarehouseError());
-        dispatch(resetCreateWarehouseResp())
-        setOpenWarehouseForm(false);
-    }
-
-    const onSaveWarehouse = (params) => {
-        dispatch(createWarehouse({ token: session.accessToken, data: params }));
-        dispatch(searchWarehouse({ token: session.accessToken, searchStr: warehouseSearchStr }));
-    }
-
-    const debouncedSearchInventory = React.useMemo(() => debounce(handleSearchInventory, 300), []);
-
-    const debouncedAddInitialStock = React.useMemo(() => debounce(handleAddInitialStock, 300), []);
-
-    const totalStock = (inventories) => {
-        let total = 0;
-        for (let i = 0; i < inventories.length; i++) {
-            total+=inventories[i].inventoryQuantity;
-        }
-        return total;
-    }
     return (
         <Box component={Paper} sx={{
             display: 'flex',
             flexDirection: 'column'
         }}>
-            <Box sx={{display: 'flex', padding: 1}}>
-                <Typography fontWeight={600}>Inventory Management</Typography>
+            <Box sx={{ display: 'flex', padding: 1 }}>
+                <Typography fontWeight={600}>Master Item</Typography>
             </Box>
             <Box sx={{
                 display: 'flex',
@@ -407,7 +355,7 @@ const Index = ({ session }) => {
                     }} label="Search" variant='outlined' size='small' onChange={debouncedSearchInventory} />
                 </Box>
                 <Box>
-                    <Button type='button' variant='contained' onClick={handleOpenInventoryForm}>Create Inventory</Button>
+                    <Button type='button' variant='contained' onClick={handleOpenMasterItemForm} >Create Master Item</Button>
                 </Box>
             </Box>
             <TableContainer>
@@ -419,33 +367,31 @@ const Index = ({ session }) => {
                             <TableCell>Item Category</TableCell>
                             <TableCell>Unit</TableCell>
                             <TableCell>Stock Type</TableCell>
-                            <TableCell>Warehouses</TableCell>
-                            <TableCell>Total Stock</TableCell>
+                            <TableCell></TableCell>
                         </TableRow>
                     </TableHead>
-                    {searchInventoryItemResp && <TableBody>
-                        {(searchInventoryItemResp.data.length>0) ? searchInventoryItemResp.data.map(row => (
+                    {searchMasterItemInvResp && <TableBody>
+                        {(searchMasterItemInvResp.data.length > 0) ? searchMasterItemInvResp.data.map(row => (
                             <TableRow key={row?.id}>
                                 <TableCell>{row?.itemName}</TableCell>
                                 <TableCell>{row?.itemCode}</TableCell>
                                 <TableCell>{row?.itemCategoryName}</TableCell>
                                 <TableCell>{row?.unitName}</TableCell>
                                 <TableCell>{row?.stockType}</TableCell>
-                                <TableCell>{row.inventories && row?.inventories.map(inv => (<Chip sx={{mr: 1}} size='small' key={inv.id} label={`${inv.warehouseName} (${inv.inventoryQuantity})`}/>))}</TableCell>
-                                <TableCell>{row.inventories && totalStock(row?.inventories)}</TableCell>
+                                <TableCell><Button type='button' variant='contained' size='small' onClick={() => handleOpenUpdateMasterItemFormDialog(row)}>Edit</Button></TableCell>
                             </TableRow>))
                             :
-                            <TableRow><TableCell colSpan={11} align='center'><Typography>Inventory is empty</Typography></TableCell></TableRow>}
+                            <TableRow><TableCell colSpan={6} align='center'><Typography>Master item is empty</Typography></TableCell></TableRow>}
 
                     </TableBody>}
                     <TableFooter>
                         <TableRow>
                             <TablePagination
-                                rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
-                                colSpan={11}
-                                count={searchInventoryItemResp?.totalRecords == undefined ? 0 : searchInventoryItemResp?.totalRecords}
+                                rowsPerPageOptions={[5, 10, 25]}
+                                colSpan={6}
+                                count={searchMasterItemInvResp?.totalRecords == undefined ? 0 : searchMasterItemInvResp?.totalRecords}
                                 rowsPerPage={rowsPerPage}
-                                page={searchInventoryItemResp?.totalRecords == undefined ? 0 : page}
+                                page={searchMasterItemInvResp?.totalRecords == undefined ? 0 : page}
                                 SelectProps={{
                                     inputProps: {
                                         'aria-label': 'rows per page',
@@ -460,132 +406,6 @@ const Index = ({ session }) => {
                     </TableFooter>
                 </Table>
             </TableContainer>
-            <Dialog id="inventory-form" open={openInventoryForm} onClose={handleCloseInventoryForm} fullWidth>
-                <form onSubmit={inventoryHandleSubmit(onSaveInventory)}>
-                    <DialogTitle>Inventory Form</DialogTitle>
-                    <DialogContent>
-                        {createInventoryResp && <Alert onClose={handleCloseInventoryForm}>Inventory created successfully</Alert>}
-                        {createInventoryError && <Alert onClose={handleCloseInventoryForm} severity="error">Create inventory error</Alert>}
-                        <Box sx={{
-                            display: 'flex',
-                            flexDirection: 'column'
-                        }}>
-                            <Box sx={{
-                                display: 'flex',
-                                flexDirection: 'row',
-                                marginBottom: 2,
-                                marginTop: 1,
-                            }}>
-                                <Controller
-                                    name="masterItem"
-                                    control={inventoryControl}
-                                    rules={{ required: "Master item cannot be empty" }}
-                                    render={({ field: { onChange, value } }) => (
-                                        <Autocomplete
-                                            fullWidth
-                                            options={searchMasterItemResp}
-                                            size='small'
-
-                                            getOptionLabel={(option) => option.itemName}
-                                            value={value ?? null}
-                                            onChange={(event, newValue) => {
-                                                onChange(newValue);
-                                            }}
-                                            isOptionEqualToValue={(opts, val) => {
-                                                return opts.id === val.id;
-                                            }}
-                                            selectOnFocus
-                                            clearOnBlur
-                                            handleHomeEndKeys
-                                            renderOption={(props, option) => <li {...props}>{option.addNewItem ?? option.itemName}</li>}
-                                            renderInput={(params) => (<TextField {...params}
-                                                label="Item Name"
-                                                size='small'
-                                                fullWidth
-                                                error={inventoryErrors.masterItem !== undefined}
-                                                helperText={inventoryErrors?.masterItem?.message} />)}
-                                        />
-                                    )}
-                                />
-                                <IconButton onClick={(evt) => setOpenMasterItemForm(true)}>
-                                    <AddCircleOutlineRoundedIcon color='primary' />
-                                </IconButton>
-                            </Box>
-
-                            <Box sx={{
-                                display: 'flex',
-                                flexDirection: 'row',
-                                marginBottom: 2
-                            }}>
-
-                                <Controller
-                                    name="warehouses"
-                                    control={inventoryControl}
-                                    rules={{
-                                        validate: (val) => {
-
-                                            if (val === undefined || val.length === 0) {
-                                                return false;
-                                            }
-                                            return true;
-                                        },
-                                        required: "Warehouse cannot be empty"
-                                    }}
-                                    render={({ field: { onChange, value } }) => (
-                                        <Autocomplete
-                                            fullWidth
-                                            multiple
-                                            size='small'
-                                            options={searchWarehouseResp}
-                                            getOptionLabel={(option) => option.warehouseName}
-                                            value={value ?? []}
-                                            onChange={(event, newValue) => {
-                                                onChange(newValue);
-                                                setWarehouses(newValue);
-                                            }}
-                                            isOptionEqualToValue={(opts, val) => {
-                                                return opts.id === val.id;
-                                            }}
-                                            renderInput={(params) => <TextField {...params}
-                                                label="Warehouses"
-                                                fullWidth
-                                                size='small'
-                                                error={inventoryErrors.warehouses !== undefined}
-                                                helperText={inventoryErrors.warehouses !== undefined && "Warehouse cannot be empty"} />}
-                                        />
-                                    )}
-                                />
-
-                                <IconButton onClick={(evt) => setOpenWarehouseForm(true)}>
-                                    <AddCircleOutlineRoundedIcon color='primary' />
-                                </IconButton>
-                            </Box>
-                            <TableContainer>
-                                <Table size='small' sx={{ minWidth: 500 }} aria-label="custom pagination table">
-                                    <TableHead>
-                                        <TableRow>
-                                            <TableCell colSpan={2} align='left'>Stock</TableCell>
-                                        </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        {inventoryGetValues('warehouses') !== undefined && inventoryGetValues('warehouses').map(row => (
-                                            <TableRow key={row.id}>
-                                                <TableCell>{row.warehouseName}</TableCell>
-                                                <TableCell><TextField type='number' size='small' defaultValue={0} onChange={(evt) => debouncedAddInitialStock(evt, row)} /></TableCell>
-                                            </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                            </TableContainer>
-                        </Box>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={handleCloseInventoryForm}>Cancel</Button>
-
-                        <Button type='submit' variant='contained' disabled={createInventoryResp !== null}>Save</Button>
-                    </DialogActions>
-                </form>
-            </Dialog>
             <Dialog id="master-item-form" open={openMasterItemForm} onClose={handleCloseMasterItemFormDialog} fullWidth>
                 <form onSubmit={masterItemHandleSubmit(onSaveMasterItem)}>
                     <DialogTitle>Master Item Form</DialogTitle>
@@ -816,7 +636,7 @@ const Index = ({ session }) => {
                     <DialogTitle>Item Category Form</DialogTitle>
                     <DialogContent>
                         {createItemCategoryResp && <Alert onClose={handleCloseItemCategoryForm}>Item category created successfully</Alert>}
-                        {createItemCategoryError && <Alert onClose={handleCloseItemCategoryForm} severity="error">Create item category error</Alert>}                
+                        {createItemCategoryError && <Alert onClose={handleCloseItemCategoryForm} severity="error">Create item category error</Alert>}
                         <Box sx={{
                             display: 'flex',
                             flexDirection: 'column',
@@ -902,74 +722,231 @@ const Index = ({ session }) => {
                     </DialogActions>
                 </form>
             </Dialog>
-            <Dialog id="warehouse-form" open={openWarehouseForm} onClose={handleCloseWarehouseForm} fullWidth>
-                <form onSubmit={warehouseHandleSubmit(onSaveWarehouse)} >
-                    <DialogTitle>Warehouse Form</DialogTitle>
+            {/* UPDATE MASTER ITEM DIALOG*/}
+            <Dialog id="update-master-item-form" open={openUpdateMasterItemForm} onClose={handleCloseUpdateMasterItemFormDialog} fullWidth>
+                <form onSubmit={masterItemHandleSubmit(onUpdateMasterItem)}>
+                    <DialogTitle>Master Item Form</DialogTitle>
                     <DialogContent>
-                        {createWarehouseResp && <Alert onClose={handleCloseWarehouseForm}>Warehouse created successfully</Alert>}
-                        {createWarehouseError && <Alert onClose={handleCloseWarehouseForm} severity="error">Create warehouse error</Alert>}
+                        {updateMasterItemResp && <Alert onClose={handleCloseUpdateMasterItemFormDialog}>Master item updated successfully</Alert>}
+                        {updateMasterItemError && <Alert onClose={handleCloseUpdateMasterItemFormDialog} severity="error">Update master item error</Alert>}
                         <Box sx={{
                             display: 'flex',
                             flexDirection: 'column',
                         }}>
-                            <Controller name='warehouseName'
-                                control={warehouseControl}
+                            <Controller name='itemName'
+                                control={masterItemControl}
                                 defaultValue=""
-                                rules={{ required: 'Warehouse name should not empty' }}
+                                rules={{ required: 'Item name should not empty' }}
                                 render={({ field }) => <TextField {...field}
                                     fullWidth size="small"
                                     margin="dense"
                                     type="text"
-                                    label="Warehouse Name"
+                                    label="Item Name"
                                     variant="outlined"
-                                    error={warehouseErrors.warehouseName?.type === 'required'}
-                                    helperText={warehouseErrors.warehouseName?.message}
+                                    error={masterItemErrors.itemName?.type === 'required'}
+                                    helperText={masterItemErrors.itemName?.message}
                                 />}
                             />
-                            <Controller name='warehouseAddress'
-                                control={warehouseControl}
+                            <Controller name='itemCode'
+                                control={masterItemControl}
+                                defaultValue=""
+                                rules={{ required: 'Item code should not empty' }}
+                                render={({ field }) => <TextField {...field}
+                                    fullWidth size="small"
+                                    margin="dense"
+                                    type="text"
+                                    label="Item Code"
+                                    variant="outlined"
+                                    error={masterItemErrors.itemCode?.type === 'required'}
+                                    helperText={masterItemErrors.itemCode?.message}
+                                />}
+                            />
+                            <Controller name='itemDescription'
+                                control={masterItemControl}
                                 defaultValue=""
                                 render={({ field }) => <TextField {...field}
                                     fullWidth size="small"
                                     margin="dense"
                                     type="text"
-                                    label="Warehouse address"
+                                    label="Item Description"
                                     variant="outlined"
                                     multiline
                                     rows={2}
                                 />}
                             />
+                            <Box sx={{
+                                display: 'flex',
+                                flexDirection: 'row',
+                                marginBottom: 2
+                            }}>
+                                <Controller
+                                    name="itemCategory"
+                                    control={masterItemControl}
+                                    rules={{ required: "Item category cannot be empty" }}
+                                    render={({ field: { onChange, value } }) => (<Autocomplete
+                                        sx={{
+                                            marginTop: 1,
+                                            marginBottom: 1
+                                        }}
+                                        fullWidth
+                                        size='small'
+                                        options={searchItemCategoryResp}
+                                        getOptionLabel={(option) => option.itemCategoryName}
+                                        value={value ?? null}
+                                        onChange={(event, newValue) => {
+                                            onChange(newValue);
+                                        }}
+                                        isOptionEqualToValue={(opts, val) => {
+                                            return opts.id === val.id;
+                                        }}
+                                        renderInput={(params) => <TextField {...params}
+                                            label="Item Category"
+                                            fullWidth
+                                            size='small'
+                                            error={masterItemErrors.itemCategory !== undefined}
+                                            helperText={masterItemErrors?.itemCategory?.message} />}
+                                    />
+                                    )
+                                    }
+                                />
+
+                                <IconButton onClick={(evt) => setOpenItemCategoryForm(true)}>
+                                    <AddCircleOutlineRoundedIcon color='primary' />
+                                </IconButton>
+                            </Box>
                             <Controller
-                                name="warehouseType"
-                                control={warehouseControl}
-                                rules={{ required: "Warehouse type cannot be empty" }}
-                                defaultValue="FIN"
+                                name="stockType"
+                                control={masterItemControl}
+                                rules={{ required: "Stock type cannot be empty" }}
                                 render={({ field: { onChange, value } }) => (
-                                    <FormControl error={warehouseErrors.warehouseType !== undefined}>
-                                        <FormLabel>Warehouse Type</FormLabel>
+                                    <FormControl error={masterItemErrors.stockType !== undefined}>
+                                        <FormLabel>Stock Type</FormLabel>
                                         <RadioGroup
-                                            value={value ?? "FIN"}
+                                            value={value ?? "STOCKABLE"}
                                             onChange={(evt) => onChange(evt.target.value)}
                                         >
-                                            <FormControlLabel value="FIN" defaultChecked={true} control={<Radio />} label="Finish good" />
-                                            <FormControlLabel value="RAW" control={<Radio />} label="Raw material" />
-                                            <FormControlLabel value="TRA" control={<Radio />} label="Transit" />
-                                            <FormControlLabel value="UNFIN" control={<Radio />} label="Unfinished good" />
+                                            <FormControlLabel value="STOCKABLE" defaultChecked={true} control={<Radio />} label="Stockable" />
+                                            <FormControlLabel value="NON_STOCKABLE" control={<Radio />} label="Non Stockable" />
                                         </RadioGroup>
-                                        {warehouseErrors.warehouseType !== undefined && <FormHelperText>{warehouseErrors?.warehouseType?.message}</FormHelperText>}
+                                        {masterItemErrors.stockType !== undefined && <FormHelperText>{masterItemErrors?.stockType?.message}</FormHelperText>}
                                     </FormControl>
                                 )}
                             />
+                            <Controller name='itemWeight'
+                                control={masterItemControl}
+                                render={({ field }) => <TextField {...field}
+                                    fullWidth size="small"
+                                    margin="dense"
+                                    type="number"
+                                    label="Item Weight"
+                                    variant="outlined"
+                                    InputProps={{
+                                        endAdornment: <InputAdornment position="end">kg</InputAdornment>,
+                                    }}
+                                />}
+                            />
+                            <Box sx={{
+                                display: 'flex',
+                                flexDirection: 'row',
+                                marginBottom: 2
+                            }}>
+                                <Controller
+                                    name='itemUnit'
+                                    control={masterItemControl}
+                                    rules={{ required: "Item unit cannot be empty" }}
+                                    render={({ field: { onChange, value } }) => (
+                                        <Autocomplete
+                                            sx={{
+                                                marginTop: 1,
+                                                marginBottom: 1
+                                            }}
+                                            fullWidth
+                                            size='small'
+                                            options={searchItemUnitResp}
+                                            getOptionLabel={(option) => option.unitName}
+                                            value={value ?? null}
+                                            onChange={(event, newValue) => {
+                                                onChange(newValue);
+                                            }}
+                                            isOptionEqualToValue={(opts, val) => {
+                                                return opts.id === val.id;
+                                            }}
+                                            renderInput={(params) => <TextField {...params}
+                                                label="Item Unit"
+                                                fullWidth
+                                                size='small'
+                                                error={masterItemErrors.itemUnit !== undefined}
+                                                helperText={masterItemErrors?.itemUnit?.message}
+                                            />}
+                                        />
+                                    )}
+                                />
+
+                                <IconButton onClick={(evt) => setOpenItemUnitForm(true)}>
+                                    <AddCircleOutlineRoundedIcon color='primary' />
+                                </IconButton>
+                            </Box>
+                            <FormControl>
+                                <FormLabel>Item Dimension</FormLabel>
+                                <Box sx={{
+                                    display: 'flex',
+                                    flexDirection: 'row',
+                                    justifyContent: 'space-around'
+                                }}>
+                                    <Controller
+                                        name="dimension.width"
+                                        control={masterItemControl}
+                                        defaultValue={0}
+                                        render={({ field }) => <TextField {...field}
+                                            placeholder="Width"
+                                            label="Width"
+                                            type='number'
+                                            variant='standard'
+                                            size='small'
+                                            margin='dense'
+                                        />
+                                        }
+                                    />
+                                    <Controller
+                                        name="dimension.length"
+                                        control={masterItemControl}
+                                        defaultValue={0}
+                                        render={({ field }) => <TextField {...field}
+                                            placeholder="Length"
+                                            label="Length"
+                                            type='number'
+                                            variant='standard'
+                                            size='small'
+                                            margin='dense'
+                                        />
+                                        }
+                                    />
+                                    <Controller
+                                        name="dimension.height"
+                                        control={masterItemControl}
+                                        defaultValue={0}
+                                        render={({ field }) => <TextField {...field}
+                                            placeholder="Height"
+                                            label="Height"
+                                            type='number'
+                                            variant='standard'
+                                            size='small'
+                                            margin='dense'
+                                        />
+                                        }
+                                    />
+                                </Box>
+                            </FormControl>
                         </Box>
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={handleCloseWarehouseForm}>Cancel</Button>
-                        <Button type='submit' variant='contained' disabled={createWarehouseResp !== null}>Save</Button>
+                        <Button onClick={handleCloseUpdateMasterItemFormDialog}>Cancel</Button>
+
+                        <Button type='submit' variant='contained' disabled={updateMasterItemResp!== null}>Save</Button>
                     </DialogActions>
                 </form>
             </Dialog>
-        </Box>
-    );
+        </Box>);
 }
 
 Index.getLayout = function getLayout(page) {

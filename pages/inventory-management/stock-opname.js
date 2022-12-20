@@ -23,7 +23,8 @@ import {
     searchWarehouse,
     updateWarehouse,
     resetCreateWarehouseResp,
-    resetCreateWarehouseError
+    resetCreateWarehouseError,
+    resetSearchWarehouseResp
 } from '../../src/redux/slices/warehouse-slice';
 
 import {
@@ -62,6 +63,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
 import Paper from '@mui/material/Paper';
+import { el } from 'date-fns/locale';
 function TablePaginationActions(props) {
     const theme = useTheme();
     const { count, page, rowsPerPage, onPageChange } = props;
@@ -238,21 +240,33 @@ const StockOpname = ({ session }) => {
 
     const handleCloseCreateStockTakeForm = () => {
         setOpenCreateStockTakeForm(false);
+        setInventoryWarehouse(null);
+        dispatch(resetSearchWarehouseResp())
+        dispatch(resetGetInvByWarehouseIdResp());
         dispatch(findStockTakeWithFilter({ page: page, size: rowsPerPage, token: session.accessToken, warehouseId: null, stockTakeDateTime: null }));
     }
 
-    const onSetRealQuantity = (val, stockTake) => {
+    const onSetRealQuantity = (val, idx) => {
         let realQty = parseFloat(val);
-        stockTake.realQuantity = realQty;
-        stockTake.differentQuantity = realQty - stockTake.inventoryQuantity;
-        let stockTakeRecords = stockTakeData.filter((val) => val.inventoryId !== stockTake.inventoryId);
-        stockTakeRecords = [...stockTakeRecords, stockTake];
-        console.log(stockTakeRecords);
-        setStockTakeData(stockTakeRecords);
+
+        let newStocktakeData = [...stockTakeData];
+        newStocktakeData = newStocktakeData.map((el, i) => {
+            if (i === idx) {
+                el.realQuantity = realQty;
+                el.differentQuantity = realQty - el.inventoryQuantity;    
+            }
+            return el;
+        });
+        setStockTakeData(newStocktakeData);
     }
 
     const onSaveStockTake = (stockTake) => {
         dispatch(createStockTake({stockTake: stockTake, token: session.accessToken}));
+    }
+
+    const handleOpenCreateStockTakeForm = () => {
+        dispatch(searchWarehouse({ searchStr: '', token: session.accessToken }));
+        setOpenCreateStockTakeForm(true);
     }
 
     return (
@@ -313,7 +327,7 @@ const StockOpname = ({ session }) => {
                     </LocalizationProvider>
                 </Box>
                 <Box>
-                    <Button type="button" variant='contained' onClick={() => setOpenCreateStockTakeForm(true)} >Create Stock Opname</Button>
+                    <Button type="button" variant='contained' onClick={() => handleOpenCreateStockTakeForm()} >Create Stock Opname</Button>
                 </Box>
             </Box>
             <TableContainer>
@@ -332,7 +346,7 @@ const StockOpname = ({ session }) => {
                     {findStockTakeWithFilterResp && <TableBody>
                         {(findStockTakeWithFilterResp.data.length > 0) ? findStockTakeWithFilterResp.data.map(row => (
                             <TableRow key={row?.id}>
-                                <TableCell>{row?.stockTakeDatetime}</TableCell>
+                                <TableCell>{dateFns.format(new Date(row?.stockTakeDatetime), "yyyy-MM-dd")}</TableCell>
                                 <TableCell>{row?.itemName}</TableCell>
                                 <TableCell>{row?.warehouseName}</TableCell>
                                 <TableCell>{row?.inventoryQuantity}</TableCell>
@@ -415,11 +429,11 @@ const StockOpname = ({ session }) => {
                                 </TableHead>
 
                                 <TableBody>
-                                    {(stockTakeData.length > 0) ? stockTakeData.map(row => (
+                                    {(stockTakeData.length > 0) ? stockTakeData.map((row, idx) => (
                                         <TableRow key={row?.inventoryId}>
                                             <TableCell>{row?.itemName}</TableCell>
                                             <TableCell>{row?.inventoryQuantity}</TableCell>
-                                            <TableCell><TextField value={row?.realQuantity} type="number" onChange={(evt) => onSetRealQuantity(evt.target.value, row)} size='small' margin='dense' /></TableCell>
+                                            <TableCell><TextField value={row?.realQuantity} type="number" onChange={(evt) => onSetRealQuantity(evt.target.value, idx)} size='small' margin='dense' /></TableCell>
                                             <TableCell>{row?.differentQuantity}</TableCell>
                                             <TableCell><Button type='button' size='small' onClick={evt => onSaveStockTake(row)}>Save</Button></TableCell>
                                         </TableRow>))

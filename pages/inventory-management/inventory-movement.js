@@ -341,7 +341,7 @@ const InventoryMovement = ({ session }) => {
                     {findAllInvMovementData && <TableBody>
                         {(findAllInvMovementData.data.length > 0) ? findAllInvMovementData.data.map(row => (
                             <TableRow key={row?.id}>
-                                <TableCell>{row?.invMoveDatetime}</TableCell>
+                                <TableCell>{dateFns.format(new Date(row?.invMoveDatetime), "yyyy-MM-dd")}</TableCell>
                                 <TableCell>{row?.itemName}</TableCell>
                                 <TableCell>{row?.fromWarehouseName}</TableCell>
                                 <TableCell>{row?.toWarehouseName}</TableCell>

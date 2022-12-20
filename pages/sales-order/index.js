@@ -146,8 +146,9 @@ function Row(props) {
     }
     return (
         <React.Fragment>
+            
             <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
-                <TableCell>
+                {/* <TableCell>
                     <IconButton
                         aria-label="expand row"
                         size="small"
@@ -155,7 +156,7 @@ function Row(props) {
                     >
                         {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
                     </IconButton>
-                </TableCell>
+                </TableCell> */}
                 <TableCell component="th" scope="row">
                     {row.soNumber}
                 </TableCell>
@@ -169,7 +170,7 @@ function Row(props) {
                 <TableCell align="right">{row.afterTaxAmount}</TableCell>
                 <TableCell><Button onClick={handleOpenDetailSo}>Detail So</Button></TableCell>
             </TableRow>
-            <TableRow>
+            {/* <TableRow>
                 <TableCell sx={{ paddingBottom: 0, paddingTop: 0 }} colSpan={11}>
                     <Collapse in={open} timeout="auto" unmountOnExit>
                         <Box sx={{ margin: 1 }}>
@@ -177,7 +178,7 @@ function Row(props) {
                         </Box>
                     </Collapse>
                 </TableCell>
-            </TableRow>
+            </TableRow> */}
         </React.Fragment>
     );
 }
@@ -242,14 +243,14 @@ const Index = ({ session }) => {
                     }} label="Search" variant='outlined' size='small' onChange={debouncedSearchSO} />
                 </Box>
                 <Box>
-                    <Button type='button' variant='contained' onClick={handleOpenCreateSalesOrder}>Create Sales Order</Button>
+                    <Button type='button' variant='contained' onClick={() => handleOpenCreateSalesOrder()}>Create Sales Order</Button>
                 </Box>
             </Box>
             <TableContainer>
                 <Table sx={{ minWidth: 500 }} aria-label="custom pagination table" size='small'>
                     <TableHead>
                         <TableRow>
-                            <TableCell align="right"></TableCell>
+                            {/* <TableCell align="right"></TableCell> */}
                             <TableCell>SO Number</TableCell>
                             <TableCell align="right">SO Status</TableCell>
                             <TableCell align="right">SO Date</TableCell>

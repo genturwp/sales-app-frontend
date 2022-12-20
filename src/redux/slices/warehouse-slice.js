@@ -57,6 +57,9 @@ const warehouseSlice = createSlice({
         resetSearchWarehouseError: (state) => {
             state.searchItemCategoryError = null;
         },
+        resetSearchWarehouseResp: (state) => {
+            state.searchWarehouseResp = [];
+        },
         resetUpdateWarehouseError: (state) => {
             state.updateItemCategoryError = null;
         },
@@ -115,6 +118,6 @@ const warehouseSlice = createSlice({
     }
 })
 
-export const {resetCreateWarehouseError, resetSearchWarehouseError, resetUpdateWarehouseError, resetCreateWarehouseResp} = warehouseSlice.actions;
+export const {resetCreateWarehouseError, resetSearchWarehouseError, resetUpdateWarehouseError, resetCreateWarehouseResp, resetSearchWarehouseResp} = warehouseSlice.actions;
 
 export default warehouseSlice.reducer;

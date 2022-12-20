@@ -340,7 +340,6 @@ const Index = ({ session }) => {
                             <TableCell></TableCell>
                         </TableRow>
                     </TableHead>
-                    {console.log(findPriceWithFilterResp)}
                     {findPriceWithFilterResp &&
                         <TableBody>
                             {(findPriceWithFilterResp.data.length > 0) ? findPriceWithFilterResp.data.map(row => (
@@ -360,7 +359,7 @@ const Index = ({ session }) => {
                     <TableFooter>
                         <TableRow>
                             <TablePagination
-                                rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+                                rowsPerPageOptions={[5, 10, 25]}
                                 colSpan={11}
                                 count={findPriceWithFilterResp?.totalRecords == undefined ? 0 : findPriceWithFilterResp?.totalRecords}
                                 rowsPerPage={rowsPerPage}

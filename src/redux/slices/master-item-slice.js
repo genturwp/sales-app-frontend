@@ -39,22 +39,28 @@ export const searchMasterItemInv = createAsyncThunk(
     }
 );
 
+export const searchInventoryItem = createAsyncThunk(
+    `${namespace}/searchInventoryItem`,
+    async (params, thunkAPI) => {
+        const endpointUrl = `${CONST.API_ENDPOINT}/inventory-management/master-item/master-item-inventory?page=${params.page}&size=${params.size}&searchStr=${params.searchStr}`;
+        const resp = await axios.get(endpointUrl, { headers: { 'Authorization': `Bearer ${params.token}` } });
+        return resp.data.payload;
+    }
+)
+
 export const updateMasterItem = createAsyncThunk(
     `${namespace}/updateMasterItem`,
     async (params, thunkAPI) => {
         const endpointUrl = `${CONST.API_ENDPOINT}/inventory-management/master-item/update`;
-        const userReq = {
-            id: params.id,
-            itemName: params.itemName,
-            itemCode: params.itemCode,
-            itemDescription: params.itemDescription,
-            itemCategoryId: params.itemCategoryId,
-            stockType: params.stockType,
-            itemWeight: params.itemWeight,
-            itemUnitId: params.itemUnitId,
-            dimension: params.dimension
+        const data = {
+            ...params.data, itemWeight: parseFloat(params.data.itemWeight), 
+            dimension: {
+                height: parseFloat(params.data.dimension.height),
+                length: parseFloat(params.data.dimension.length),
+                width: parseFloat(params.data.dimension.width)
+            }
         }
-        const resp = await axios.post(endpointUrl, userReq, { headers: { 'Authorization': `Bearer ${params.token}`, 'Content-Type': 'application/json' } });
+        const resp = await axios.post(endpointUrl, JSON.stringify(data), { headers: { 'Authorization': `Bearer ${params.token}`, 'Content-Type': 'application/json' } });
         return resp.data.payload;
     }
 );
@@ -74,6 +80,9 @@ const masterItemSlice = createSlice({
         updateMasterItemLoading: false,
         updateMasterItemResp: null,
         updateMasterItemError: null,
+        searchInventoryItemLoading: false,
+        searchInventoryItemResp: null,
+        searchInventoryItemError: null
     },
     reducers: {
         resetCreateMasterItemError: (state) => {
@@ -90,6 +99,18 @@ const masterItemSlice = createSlice({
         },
         resetCreateMasteritemResp: (state) => {
             state.createMasterItemResp = null;
+        },
+        resetUpdateMasterItemResp: (state) => {
+            state.updateMasterItemResp = null;
+        },
+        resetSearchInventoryItemLoading: (state) => {
+            state.searchInventoryItemLoading = false;
+        },
+        resetSearchInventoryItemResp: (state) => {
+            state.searchInventoryItemResp = null;
+        },
+        resetSearchInventoryItemError: (state) => {
+            state.searchInventoryItemError = null;
         }
     },
     extraReducers: (builder) => {
@@ -154,10 +175,29 @@ const masterItemSlice = createSlice({
                 state.updateMasterItemResp = null;
                 state.updateMasterItemError = action.error;
             })
+            .addCase(searchInventoryItem.pending, (state) => {
+                state.searchInventoryItemLoading = true;
+                state.searchInventoryItemResp = null;
+                state.searchInventoryItemError = null;
+            })
+            .addCase(searchInventoryItem.fulfilled, (state, action) => {
+                state.searchInventoryItemLoading = false;
+                state.searchInventoryItemResp = action.payload;
+                state.searchInventoryItemError = null;
+            })
+            .addCase(searchInventoryItem.rejected, (state, action) => {
+                state.searchInventoryItemLoading = false;
+                state.searchInventoryItemResp = null;
+                state.searchInventoryItemError = action.error;
+            })
+
 
     }
 })
 
-export const {resetCreateMasterItemError, resetSearchMasterItemError, resetSearchMasterItemInvError, resetUpdateMasterItemError, resetCreateMasteritemResp} = masterItemSlice.actions;
+export const {resetCreateMasterItemError, resetSearchMasterItemError, 
+    resetSearchMasterItemInvError, resetUpdateMasterItemError, 
+    resetCreateMasteritemResp, resetUpdateMasterItemResp, resetSearchInventoryItemError, 
+    resetSearchInventoryItemLoading, resetSearchInventoryItemResp} = masterItemSlice.actions;
 
 export default masterItemSlice.reducer;

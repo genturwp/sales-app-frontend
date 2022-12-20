@@ -41,6 +41,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import Chip from '@mui/material/Chip';
+import Link from 'next/link';
 
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -152,7 +153,7 @@ function Row(props) {
                     </IconButton>
                 </TableCell>
                 <TableCell component="th" scope="row">
-                    {row.soNumber}
+                    <Link href={`/sales-order/info/${row.soId}`}>{row.soNumber}</Link>
                 </TableCell>
                 <TableCell>{row.invNumber}</TableCell>
                 <TableCell><Chip label={row.invStatus} color='primary'/></TableCell>
@@ -314,7 +315,7 @@ const Index = ({ session }) => {
                         </Select>
                     </FormControl>
                 </Box>
-                <Button type='button' variant='contained' onClick={handleOpenCreateSalesInvoice}>Create Invoice</Button>
+                {/* <Button type='button' variant='contained' onClick={handleOpenCreateSalesInvoice}>Create Invoice</Button> */}
             </Box>
             <Box>
                 <TableContainer>
@@ -337,6 +338,7 @@ const Index = ({ session }) => {
                         </TableHead>
                         {searchSalesInvResp &&
                             <TableBody>
+                                {console.log(searchSalesInvResp)}
                                 {(searchSalesInvResp.data.length > 0) ? searchSalesInvResp.data.map(row => (
                                     <Row key={row?.id} row={row} />
                                 )) :
