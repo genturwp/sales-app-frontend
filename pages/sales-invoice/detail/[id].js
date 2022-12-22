@@ -400,7 +400,7 @@ const DetailInvoice = ({ session }) => {
                                 <TableCell>Inc. Payment Date</TableCell>
                                 <TableCell>Payment Amount</TableCell>
                                 <TableCell>Payment method</TableCell>
-                                <TableCell>Cust. Bank Info</TableCell>
+                                {/* <TableCell>Cust. Bank Info</TableCell> */}
                                 <TableCell>Receive. Bank Info</TableCell>
                             </TableRow>
                         </TableHead>
@@ -412,9 +412,10 @@ const DetailInvoice = ({ session }) => {
                                         <TableCell>{dateFns.format(new Date(ip.ipDate), "yyyy-MM-dd")}</TableCell>
                                         <TableCell>{ip.paymentAmount}</TableCell>
                                         <TableCell>{ip.paymentMethod}</TableCell>
-                                        {ip.paymentMethod == "TRANSFER" ? <><TableCell sx={{
-                                            fontSize: 12
-                                        }}>{`${ip.custBankAccountName}-${ip.custBankName}-${ip.custBankAccountNo}`}</TableCell>
+                                        {ip.paymentMethod == "TRANSFER" ? <>
+                                            {/* <TableCell sx={{
+                                                fontSize: 12
+                                            }}>{`${ip.custBankAccountName}-${ip.custBankName}-${ip.custBankAccountNo}`}</TableCell> */}
                                             <TableCell sx={{
                                                 fontSize: 12
                                             }}>{`${ip.ownerBankAccountName}-${ip.ownerBankName}-${ip.ownerBankAccountNo}`}</TableCell></>
@@ -477,7 +478,7 @@ const DetailInvoice = ({ session }) => {
                     </Box>
                     {incomingPaymentReq.paymentMethod === "TRANSFER" ?
                         <>
-                            <Box sx={{
+                            {/* <Box sx={{
                                 display: 'flex',
                                 flexDirection: 'row',
                                 mt: 2
@@ -505,7 +506,7 @@ const DetailInvoice = ({ session }) => {
                                 <IconButton onClick={(evt) => setOpenCreateCustomerBankDialog(true)}>
                                     <AddCircleOutlineRoundedIcon color='primary' />
                                 </IconButton>
-                            </Box>
+                            </Box> */}
 
                             <Box sx={{ mt: 2 }}>
                                 <Autocomplete

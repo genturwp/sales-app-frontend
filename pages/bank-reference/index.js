@@ -50,59 +50,75 @@ import { debounce, set } from 'lodash';
 
 import {
     createBankReference, fetchAllBankReference, updateBankReference,
-    resetCreateBankRefResp
+    resetCreateBankRefResp, createOwnerBank, updateOwnerBank, fetchOwnerBank,
+    resetCreateOwnerBankResp, resetUpdateOwnerBankResp
 } from '../../src/redux/slices/bank-reference-slice';
 
 const Index = ({ session }) => {
 
-    const [openCreateBankDialog, setOpenCreateBankDialog] = React.useState(false);
-    const [bankReferenceReq, setBankReferenceReq] = React.useState({
+    const [openOwnerBankInfoDialog, setOpenOwnerBankInfoDialog] = React.useState(false);
+
+    const [ownerBankInfoReq, setOwnerBankInfoReq] = React.useState({
+        id: '',
         bankName: '',
-        bankCode: ''
+        bankCode: '',
+        bankAccountName: '',
+        bankAccountNumber: '',
     });
-    const [isEditBankRef, setIsEditBankRef] = React.useState(false);
 
     const dispatch = useDispatch();
 
     const {
-        createBankRefResp, updateBankRefResp, fetchBankRefResp
+        createBankRefResp, updateBankRefResp, fetchBankRefResp,
+        createOwnerBankLoading,
+        createOwnerBankResp,
+        createOwnerBankErr,
+        updateOwnerBankLoading,
+        updateOwnerBankResp,
+        updateOwnerBankErr,
+        fetchOwnerBankLoading,
+        fetchOwnerBankResp,
+        fetchOwnerBankErr 
     } = useSelector((state) => state.bankReference);
 
     React.useEffect(() => {
-        dispatch(fetchAllBankReference({ token: session.accessToken }))
-    }, [createBankRefResp, updateBankRefResp, session]);
+        dispatch(fetchOwnerBank({token: session.accessToken}));
+    }, [createOwnerBankResp, updateOwnerBankResp, session])
 
-    const handleOpenCreateBankDialog = () => {
-        setOpenCreateBankDialog(true);
+    const handleEditOwnerBankInfo = (obi) => {
+        setOwnerBankInfoReq(obi);
+        setOpenOwnerBankInfoDialog(true);
     }
 
-    const handleCloseCreateBankDialog = () => {
-        setOpenCreateBankDialog(false);
-        setBankReferenceReq({
+    const handleCloseOwnerBankInfoDialog = () => {
+        setOwnerBankInfoReq({
+            id: '',
             bankName: '',
-            bankCode: ''
+            bankCode: '',
+            bankAccountName: '',
+            bankAccountNumber: ''
+        });
+        setOpenOwnerBankInfoDialog(false);
+    }
+
+    const handleOpenOwnerBankInfoDialog = () => {
+        setOpenOwnerBankInfoDialog(true);
+        setOwnerBankInfoReq({
+            id: '',
+            bankName: '',
+            bankCode: '',
+            bankAccountName: '',
+            bankAccountNumber: ''
         });
     }
 
-    const handleCreateBankReference = () => {
-        if (isEditBankRef) {
-            dispatch(updateBankReference({ bankRef: bankReferenceReq, token: session.accessToken }));
-            setIsEditBankRef(!isEditBankRef);
+    const handleCreateOrUpdateOwnerBankInfo = () => {
+        if (ownerBankInfoReq.id === '') {
+
+            dispatch(createOwnerBank({ownerBank: {...ownerBankInfoReq, id: null}, token: session.accessToken}));
         } else {
-            dispatch(createBankReference({ bankRef: bankReferenceReq, token: session.accessToken }));
+            dispatch(updateOwnerBank({ownerBank: ownerBankInfoReq, token: session.accessToken}));
         }
-        setOpenCreateBankDialog(false);
-        setBankReferenceReq({
-            bankName: '',
-            bankCode: ''
-        });
-        dispatch(fetchAllBankReference({ token: session.accessToken }));
-    }
-
-    const handleEditBankReference = (_bankRef) => {
-        setBankReferenceReq(_bankRef);
-        setOpenCreateBankDialog(true);
-        setIsEditBankRef(true);
     }
 
     return (
@@ -119,7 +135,7 @@ const Index = ({ session }) => {
                 justifyContent: 'flex-end',
                 padding: 1
             }}>
-                <Button type="button" variant='contained' onClick={() => handleOpenCreateBankDialog()} >Create Bank Reference</Button>
+                <Button type="button" variant='contained' onClick={() => handleOpenOwnerBankInfoDialog()} >Create Bank Reference</Button>
             </Box>
             <TableContainer>
                 <Table sx={{ minWidth: 500 }} aria-label="custom pagination table">
@@ -127,21 +143,26 @@ const Index = ({ session }) => {
                         <TableRow>
                             <TableCell>Bank Name</TableCell>
                             <TableCell>Bank Code</TableCell>
+                            <TableCell>Bank Account Name</TableCell>
+                            <TableCell>Bank Account Number</TableCell>
                             <TableCell></TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {fetchBankRefResp?.length > 0 ? fetchBankRefResp.map(row => (
+                        {fetchOwnerBankResp?.length > 0 ? fetchOwnerBankResp.map(row => (
                             <TableRow key={row?.id}>
                                 <TableCell>{row?.bankName}</TableCell>
                                 <TableCell>{row?.bankCode}</TableCell>
-                                <TableCell><Button onClick={() => handleEditBankReference(row)}>Edit</Button></TableCell>
+                                <TableCell>{row?.bankAccountName}</TableCell>
+                                <TableCell>{row?.bankAccountNumber}</TableCell>
+                                <TableCell><Button onClick={() => handleEditOwnerBankInfo(row)}>Edit</Button></TableCell>
                             </TableRow>
                         )) : <TableRow><TableCell colSpan={2} align='center'><Typography>Bank Reference is empty</Typography></TableCell></TableRow>}
                     </TableBody>
                 </Table>
             </TableContainer>
-            <Dialog fullWidth open={openCreateBankDialog} onClose={handleCloseCreateBankDialog}>
+
+            <Dialog fullWidth open={openOwnerBankInfoDialog} onClose={handleCloseOwnerBankInfoDialog}>
 
                 <DialogTitle>{`Create Bank Reference`}</DialogTitle>
                 <DialogContent>
@@ -151,21 +172,37 @@ const Index = ({ session }) => {
                         label="Bank name"
                         fullWidth
                         variant='outlined'
-                        value={bankReferenceReq?.bankName}
-                        onChange={(evt) => setBankReferenceReq({ ...bankReferenceReq, bankName: evt.target.value })}
+                        value={ownerBankInfoReq?.bankName}
+                        onChange={(evt) => setOwnerBankInfoReq({ ...ownerBankInfoReq, bankName: evt.target.value })}
                     />
                     <TextField
                         margin="dense"
                         label="Bank code"
                         fullWidth
                         variant='outlined'
-                        value={bankReferenceReq?.bankCode}
-                        onChange={(evt) => setBankReferenceReq({ ...bankReferenceReq, bankCode: evt.target.value })}
+                        value={ownerBankInfoReq?.bankCode}
+                        onChange={(evt) => setOwnerBankInfoReq({ ...ownerBankInfoReq, bankCode: evt.target.value })}
+                    />
+                    <TextField
+                        margin="dense"
+                        label="Bank Account Name"
+                        fullWidth
+                        variant='outlined'
+                        value={ownerBankInfoReq?.bankAccountName}
+                        onChange={(evt) => setOwnerBankInfoReq({ ...ownerBankInfoReq, bankAccountName: evt.target.value })}
+                    />
+                    <TextField
+                        margin="dense"
+                        label="Bank Account Code"
+                        fullWidth
+                        variant='outlined'
+                        value={ownerBankInfoReq?.bankAccountNumber}
+                        onChange={(evt) => setOwnerBankInfoReq({ ...ownerBankInfoReq, bankAccountNumber: evt.target.value })}
                     />
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleCloseCreateBankDialog}>Cancel</Button>
-                    <Button onClick={handleCreateBankReference}>Save</Button>
+                    <Button onClick={handleCloseOwnerBankInfoDialog}>Cancel</Button>
+                    <Button onClick={handleCreateOrUpdateOwnerBankInfo}>Save</Button>
                 </DialogActions>
             </Dialog>
         </Box>
