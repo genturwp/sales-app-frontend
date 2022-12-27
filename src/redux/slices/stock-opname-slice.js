@@ -42,7 +42,6 @@ export const findStockTakeWithFilter = createAsyncThunk(
         if (params.stockTakeDateTime) {
             endpointUrl = endpointUrl + `&stockTakeDateTime=${params.stockTakeDateTime}`;
         }
-        console.log(endpointUrl);
         const resp = await axios.get(endpointUrl, { headers: { 'Authorization': `Bearer ${params.token}` } });
         return resp.data.payload;
     }

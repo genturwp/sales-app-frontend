@@ -15,8 +15,8 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
+//import InboxIcon from '@mui/icons-material/MoveToInbox';
+//import MailIcon from '@mui/icons-material/Mail';
 import HomeIcon from '@mui/icons-material/Home';
 import Link from 'next/link';
 import PointOfSaleIcon from '@mui/icons-material/PointOfSale';
@@ -29,6 +29,7 @@ import PaymentsIcon from '@mui/icons-material/Payments';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import PeopleIcon from '@mui/icons-material/People';
 import CategoryIcon from '@mui/icons-material/Category';
+import { useSession } from 'next-auth/react';
 
 const drawerWidth = 240;
 
@@ -100,6 +101,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 export default function DashboardLayout({ children }) {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
+  const { data: session, status} = useSession();
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -111,6 +113,7 @@ export default function DashboardLayout({ children }) {
 
   return (
     <Box sx={{ display: 'flex' }}>
+      {console.log(session?.user.roles)}
       <CssBaseline />
       <AppBar position="fixed" open={open}>
         <Toolbar>
@@ -159,7 +162,7 @@ export default function DashboardLayout({ children }) {
             </ListItemButton>
           </Link>
           <Divider/>
-          <Link href="/sales-order" passHref>
+          {(session?.user.roles.includes("ADMIN") ||  session?.user.roles.includes("SALES")) && <Link href="/sales-order" passHref>
             <ListItemButton
               sx={{
                 minHeight: 48,
@@ -177,8 +180,8 @@ export default function DashboardLayout({ children }) {
               </ListItemIcon>
               <ListItemText primary="Sales Order" sx={{ opacity: open ? 1 : 0 }} />
             </ListItemButton>
-          </Link>
-          <Link href="/sales-invoice" passHref>
+          </Link>}
+          {(session?.user.roles.includes("ADMIN") || session?.user.roles.includes("CASHIER")) && <Link href="/sales-invoice" passHref>
             <ListItemButton
               sx={{
                 minHeight: 48,
@@ -196,8 +199,8 @@ export default function DashboardLayout({ children }) {
               </ListItemIcon>
               <ListItemText primary="Invoice" sx={{ opacity: open ? 1 : 0 }} />
             </ListItemButton>
-          </Link>
-          <Link href="/delivery-order" passHref>
+          </Link>}
+          {(session?.user.roles.includes("ADMIN") || session?.user.roles.includes("WAREHOUSE")) && <Link href="/delivery-order" passHref>
             <ListItemButton
               sx={{
                 minHeight: 48,
@@ -215,9 +218,9 @@ export default function DashboardLayout({ children }) {
               </ListItemIcon>
               <ListItemText primary="Delivery Order" sx={{ opacity: open ? 1 : 0 }} />
             </ListItemButton>
-          </Link>
+          </Link> }
           <Divider/>
-          <Link href="/inventory-management" passHref>
+          {(session?.user.roles.includes("ADMIN") || session?.user.roles.includes("WAREHOUSE")) && <Link href="/inventory-management" passHref>
             <ListItemButton
               sx={{
                 minHeight: 48,
@@ -235,8 +238,8 @@ export default function DashboardLayout({ children }) {
               </ListItemIcon>
               <ListItemText primary="Inventory" sx={{ opacity: open ? 1 : 0 }} />
             </ListItemButton>
-          </Link>
-          <Link href="/inventory-management/inventory-movement" passHref>
+          </Link>}
+          { (session?.user.roles.includes("ADMIN") || session?.user.roles.includes("WAREHOUSE")) && <Link href="/inventory-management/inventory-movement" passHref>
             <ListItemButton
               sx={{
                 minHeight: 48,
@@ -254,8 +257,8 @@ export default function DashboardLayout({ children }) {
               </ListItemIcon>
               <ListItemText primary="Inv. Movement" sx={{ opacity: open ? 1 : 0 }} />
             </ListItemButton>
-          </Link>
-          <Link href="/inventory-management/stock-opname" passHref>
+          </Link>}
+          { (session?.user.roles.includes("ADMIN")|| session?.user.roles.includes("WAREHOUSE")) && <Link href="/inventory-management/stock-opname" passHref>
             <ListItemButton
               sx={{
                 minHeight: 48,
@@ -273,8 +276,8 @@ export default function DashboardLayout({ children }) {
               </ListItemIcon>
               <ListItemText primary="Stock Opname" sx={{ opacity: open ? 1 : 0 }} />
             </ListItemButton>
-          </Link>
-          <Link href="/master-item" passHref>
+          </Link> }
+          { (session?.user.roles.includes("ADMIN")|| session?.user.roles.includes("WAREHOUSE")) && <Link href="/master-item" passHref>
             <ListItemButton
               sx={{
                 minHeight: 48,
@@ -292,9 +295,9 @@ export default function DashboardLayout({ children }) {
               </ListItemIcon>
               <ListItemText primary="Master Item" sx={{ opacity: open ? 1 : 0 }} />
             </ListItemButton>
-          </Link>
+          </Link> }
           <Divider/>
-          <Link href="/pricing-management" passHref>
+          {(session?.user.roles.includes("ADMIN") || session?.user.roles.includes("SALES")) && <Link href="/pricing-management" passHref>
             <ListItemButton
               sx={{
                 minHeight: 48,
@@ -312,8 +315,8 @@ export default function DashboardLayout({ children }) {
               </ListItemIcon>
               <ListItemText primary="Pricing" sx={{ opacity: open ? 1 : 0 }} />
             </ListItemButton>
-          </Link>
-          <Link href="/bank-reference" passHref>
+          </Link> }
+          {(session?.user.roles.includes("ADMIN") || session?.user.roles.includes("CASHIER")) && <Link href="/bank-reference" passHref>
             <ListItemButton
               sx={{
                 minHeight: 48,
@@ -331,8 +334,8 @@ export default function DashboardLayout({ children }) {
               </ListItemIcon>
               <ListItemText primary="Bank Reference" sx={{ opacity: open ? 1 : 0 }} />
             </ListItemButton>
-          </Link>
-          <Link href="/user-management" passHref>
+          </Link> }
+          { session?.user.roles.includes("ADMIN") && <Link href="/user-management" passHref>
             <ListItemButton
               sx={{
                 minHeight: 48,
@@ -350,7 +353,7 @@ export default function DashboardLayout({ children }) {
               </ListItemIcon>
               <ListItemText primary="User Management" sx={{ opacity: open ? 1 : 0 }} />
             </ListItemButton>
-          </Link>
+          </Link> }
         </List>        
       </Drawer>
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
