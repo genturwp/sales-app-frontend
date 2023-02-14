@@ -14,7 +14,7 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableRow from '@mui/material/TableRow';
 import Button from '@mui/material/Button';
-
+import * as dateFns from 'date-fns';
 import { useSelector, useDispatch } from 'react-redux';
 
 import {
@@ -43,6 +43,9 @@ const SoDraft = ({ session }) => {
     const updateSoToOpen = () => {
         dispatch(updateSODraftToOpen({ soId: id, token: session.accessToken }));
     }
+
+    let numFormat = new Intl.NumberFormat('de-DE');
+
     return (
         <Box>
             <Box component={Paper} sx={{
@@ -146,7 +149,7 @@ const SoDraft = ({ session }) => {
                                 <Typography fontSize={14} fontWeight={500}>Shipping Date</Typography>
                             </Box>
                             <Box>
-                                <Typography>{findSOByIdResp?.shippingDate}</Typography>
+                                <Typography>{findSOByIdResp?.shippingDate?dateFns.format(new Date(findSOByIdResp.shippingDate), "yyyy-MM-dd"):dateFns.format(new Date(), "yyyy-MM-dd")}</Typography>
                             </Box>
                         </Box>
                         <Box sx={{ padding: 1 }}>
@@ -154,7 +157,7 @@ const SoDraft = ({ session }) => {
                                 <Typography fontSize={14} fontWeight={500}>Shipping Cost</Typography>
                             </Box>
                             <Box>
-                                <Typography>{findSOByIdResp?.shippingCost}</Typography>
+                                <Typography>{numFormat.format(findSOByIdResp?.shippingCost)}</Typography>
                             </Box>
                         </Box>
                         <Box sx={{ padding: 1 }}>
@@ -189,7 +192,7 @@ const SoDraft = ({ session }) => {
                                 <Typography fontSize={14} fontWeight={500}>Payment Due Date</Typography>
                             </Box>
                             <Box>
-                                <Typography>{findSOByIdResp?.paymentDueDate}</Typography>
+                                <Typography>{findSOByIdResp?.paymentDueDate?dateFns.format(new Date(findSOByIdResp.paymentDueDate), "yyyy-MM-dd"): dateFns.format(new Date(), "yyyy-MM-dd")}</Typography>
                             </Box>
                         </Box>
                         <Box sx={{ padding: 1 }}>
@@ -245,20 +248,20 @@ const SoDraft = ({ session }) => {
                                     <TableCell>{row.itemName}</TableCell>
                                     <TableCell>{row.itemCode}</TableCell>
                                     <TableCell>{row.itemUnit}</TableCell>
-                                    <TableCell>{row.inventoryQty}</TableCell>
-                                    <TableCell>{row.itemPrice}</TableCell>
-                                    <TableCell>{row.salesQty}</TableCell>
+                                    <TableCell>{numFormat.format(row.inventoryQty)}</TableCell>
+                                    <TableCell>{numFormat.format(row.itemPrice)}</TableCell>
+                                    <TableCell>{numFormat.format(row.salesQty)}</TableCell>
                                     <TableCell>{row.itemDiscount}</TableCell>
-                                    <TableCell>{row.itemDiscountAmount}</TableCell>
-                                    <TableCell>{row.amount}</TableCell>
-                                    <TableCell align='right'>{row.total}</TableCell>
+                                    <TableCell>{numFormat.format(row.itemDiscountAmount)}</TableCell>
+                                    <TableCell>{numFormat.format(row.amount)}</TableCell>
+                                    <TableCell align='right'>{numFormat.format(row.total)}</TableCell>
                                 </TableRow>)}
                             <TableRow>
                                 <TableCell align='right' colSpan={9}>
                                     <Typography fontSize={16} fontWeight={500}>Sub total</Typography>
                                 </TableCell>
                                 <TableCell>
-                                    <Typography fontSize={14} fontWeight={500} align='right'>{findSOByIdResp?.totalAmount}</Typography>
+                                    <Typography fontSize={14} fontWeight={500} align='right'>{numFormat.format(findSOByIdResp?.totalAmount)}</Typography>
                                 </TableCell>
                             </TableRow>
                             <TableRow>
@@ -269,7 +272,7 @@ const SoDraft = ({ session }) => {
                                     <Typography fontSize={14} fontWeight={500} align='right'>{`${findSOByIdResp?.grandDiscount} %`}</Typography>
                                 </TableCell>
                                 <TableCell>
-                                    <Typography fontSize={14} fontWeight={500} align='right'>{`${findSOByIdResp?.grandDiscountAmount}`}</Typography>
+                                    <Typography fontSize={14} fontWeight={500} align='right'>{`${numFormat.format(findSOByIdResp?.grandDiscountAmount)}`}</Typography>
                                 </TableCell>
                             </TableRow>
                             <TableRow>
@@ -277,7 +280,7 @@ const SoDraft = ({ session }) => {
                                     <Typography fontSize={16} fontWeight={500}>Shipping Cost</Typography>
                                 </TableCell>
                                 <TableCell>
-                                    <Typography fontSize={14} fontWeight={500} align='right'>{findSOByIdResp?.shippingCost}</Typography>
+                                    <Typography fontSize={14} fontWeight={500} align='right'>{numFormat.format(findSOByIdResp?.shippingCost)}</Typography>
                                 </TableCell>
                             </TableRow>
                             <TableRow>
@@ -285,7 +288,7 @@ const SoDraft = ({ session }) => {
                                     <Typography fontSize={16} fontWeight={500}>Tax</Typography>
                                 </TableCell>
                                 <TableCell>
-                                    <Typography fontSize={14} fontWeight={500} align='right'>{findSOByIdResp?.taxAmount}</Typography>
+                                    <Typography fontSize={14} fontWeight={500} align='right'>{numFormat.format(findSOByIdResp?.taxAmount?findSOByIdResp.taxAmount:0)}</Typography>
                                 </TableCell>
                             </TableRow>
                             <TableRow>
@@ -293,7 +296,7 @@ const SoDraft = ({ session }) => {
                                     <Typography fontSize={16} fontWeight={500}>Grand Total</Typography>
                                 </TableCell>
                                 <TableCell>
-                                    <Typography fontSize={14} fontWeight={500} align='right'>{findSOByIdResp?.afterTaxAmount}</Typography>
+                                    <Typography fontSize={14} fontWeight={500} align='right'>{numFormat.format(findSOByIdResp?.afterTaxAmount)}</Typography>
                                 </TableCell>
                             </TableRow>
                         </TableBody>

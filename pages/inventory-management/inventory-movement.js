@@ -223,7 +223,7 @@ const InventoryMovement = ({ session }) => {
         dispatch(findAllInvMovement({ page: page, size: rowsPerPage, token: session.accessToken }));
 
     }
-
+    let numFormat = new Intl.NumberFormat('de-DE');
     return (
         <Box component={Paper} sx={{
             display: 'flex',
@@ -345,7 +345,7 @@ const InventoryMovement = ({ session }) => {
                                 <TableCell>{row?.itemName}</TableCell>
                                 <TableCell>{row?.fromWarehouseName}</TableCell>
                                 <TableCell>{row?.toWarehouseName}</TableCell>
-                                <TableCell>{row?.movedQuantity}</TableCell>
+                                <TableCell>{numFormat.format(row?.movedQuantity)}</TableCell>
                             </TableRow>))
                             :
                             <TableRow><TableCell colSpan={5} align='center'><Typography>Inventory is empty</Typography></TableCell></TableRow>}

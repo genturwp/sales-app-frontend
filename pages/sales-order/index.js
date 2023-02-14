@@ -144,6 +144,7 @@ function Row(props) {
         const detailSoUrl = `/sales-order/info/${row.id}`;
         router.push(detailSoUrl)
     }
+    let numFormat = new Intl.NumberFormat('de-DE');
     return (
         <React.Fragment>
             
@@ -163,11 +164,11 @@ function Row(props) {
                 <TableCell align="right">{row.soStatus}</TableCell>
                 <TableCell align="right">{dateFns.format(new Date(row.soDate), "yyyy-MM-dd")}</TableCell>
                 <TableCell align="right">{row.customerName}</TableCell>
-                <TableCell align="right">{row.grandDiscount}</TableCell>
-                <TableCell align="right">{row.totalAmount}</TableCell>
-                <TableCell align="right">{row.grandTotal}</TableCell>
-                <TableCell align="right">{row.taxAmount}</TableCell>
-                <TableCell align="right">{row.afterTaxAmount}</TableCell>
+                <TableCell align="right">{row.grandDiscount != null?numFormat.format(row.grandDiscount): 0}</TableCell>
+                <TableCell align="right">{row.totalAmount != null?numFormat.format(row.totalAmount): 0}</TableCell>
+                <TableCell align="right">{row.grandTotal != null?numFormat.format(row.grandTotal) : 0}</TableCell>
+                <TableCell align="right">{row.taxAmount != null? numFormat.format(row.taxAmount): 0}</TableCell>
+                <TableCell align="right">{row.afterTaxAmount != null?numFormat.format(row.afterTaxAmount): 0}</TableCell>
                 <TableCell><Button onClick={handleOpenDetailSo}>Detail So</Button></TableCell>
             </TableRow>
             {/* <TableRow>

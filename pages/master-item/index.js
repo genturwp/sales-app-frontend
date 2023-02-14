@@ -129,7 +129,7 @@ const MenuProps = {
 
 const Index = ({ session }) => {
     const [page, setPage] = React.useState(0);
-    const [rowsPerPage, setRowsPerPage] = React.useState(5);
+    const [rowsPerPage, setRowsPerPage] = React.useState(25);
     const [searchStr, setSearchStr] = React.useState('');
     const [openMasterItemForm, setOpenMasterItemForm] = React.useState(false);
     const [openItemCategoryForm, setOpenItemCategoryForm] = React.useState(false);
@@ -381,7 +381,7 @@ const Index = ({ session }) => {
                                 <TableCell><Button type='button' variant='contained' size='small' onClick={() => handleOpenUpdateMasterItemFormDialog(row)}>Edit</Button></TableCell>
                             </TableRow>))
                             :
-                            <TableRow><TableCell colSpan={6} align='center'><Typography>Master item is empty</Typography></TableCell></TableRow>}
+                            <TableRow><TableCell colSpan={6} align='center'><Typography fontSize={'0.8rem'}>Master item is empty</Typography></TableCell></TableRow>}
 
                     </TableBody>}
                     <TableFooter>

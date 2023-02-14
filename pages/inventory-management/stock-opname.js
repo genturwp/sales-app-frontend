@@ -268,7 +268,7 @@ const StockOpname = ({ session }) => {
         dispatch(searchWarehouse({ searchStr: '', token: session.accessToken }));
         setOpenCreateStockTakeForm(true);
     }
-
+    let numFormat = new Intl.NumberFormat('de-DE');
     return (
         <Box component={Paper} sx={{
             display: 'flex',
@@ -349,9 +349,9 @@ const StockOpname = ({ session }) => {
                                 <TableCell>{dateFns.format(new Date(row?.stockTakeDatetime), "yyyy-MM-dd")}</TableCell>
                                 <TableCell>{row?.itemName}</TableCell>
                                 <TableCell>{row?.warehouseName}</TableCell>
-                                <TableCell>{row?.inventoryQuantity}</TableCell>
-                                <TableCell>{row?.realQuantity}</TableCell>
-                                <TableCell>{row?.differentQuantity}</TableCell>
+                                <TableCell>{numFormat.format(row?.inventoryQuantity)}</TableCell>
+                                <TableCell>{numFormat.format(row?.realQuantity)}</TableCell>
+                                <TableCell>{numFormat.format(row?.differentQuantity)}</TableCell>
                             </TableRow>))
                             :
                             <TableRow><TableCell colSpan={6} align='center'><Typography>Stock opname is empty</Typography></TableCell></TableRow>}
@@ -426,15 +426,16 @@ const StockOpname = ({ session }) => {
                                         <TableCell>Different Quantity</TableCell>
                                         <TableCell></TableCell>
                                     </TableRow>
+                                    {console.log('createStockTakeResp = ', createStockTakeResp)}
                                 </TableHead>
 
                                 <TableBody>
                                     {(stockTakeData.length > 0) ? stockTakeData.map((row, idx) => (
                                         <TableRow key={row?.inventoryId}>
                                             <TableCell>{row?.itemName}</TableCell>
-                                            <TableCell>{row?.inventoryQuantity}</TableCell>
-                                            <TableCell><TextField value={row?.realQuantity} type="number" onChange={(evt) => onSetRealQuantity(evt.target.value, idx)} size='small' margin='dense' /></TableCell>
-                                            <TableCell>{row?.differentQuantity}</TableCell>
+                                            <TableCell>{numFormat.format(row?.inventoryQuantity)}</TableCell>
+                                            <TableCell><TextField value={numFormat.format(row?.realQuantity)} type="number" onChange={(evt) => onSetRealQuantity(evt.target.value, idx)} size='small' margin='dense' /></TableCell>
+                                            <TableCell>{numFormat.format(row?.differentQuantity)}</TableCell>
                                             <TableCell><Button type='button' size='small' onClick={evt => onSaveStockTake(row)}>Save</Button></TableCell>
                                         </TableRow>))
                                         :

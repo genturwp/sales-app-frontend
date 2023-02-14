@@ -31,7 +31,7 @@ import PeopleIcon from '@mui/icons-material/People';
 import CategoryIcon from '@mui/icons-material/Category';
 import { useSession } from 'next-auth/react';
 
-const drawerWidth = 240;
+const drawerWidth = 200;
 
 const openedMixin = (theme) => ({
   width: drawerWidth,

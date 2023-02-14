@@ -252,6 +252,8 @@ const DetailInvoice = ({ session }) => {
         dispatch(createCustomerBank({ customerBank: createCustomerBankReq, token: session.accessToken }));
     }
 
+    let numFormat = new Intl.NumberFormat('de-DE');
+
     return (
         <Box>
             <Box component={Paper} sx={{
@@ -340,7 +342,7 @@ const DetailInvoice = ({ session }) => {
                                         <Typography fontSize={14} fontWeight={500}>Invoice Amount</Typography>
                                     </Box>
                                     <Box>
-                                        <Typography>{getSalesInvoiceByIdResp?.invoiceAmount}</Typography>
+                                        <Typography>{numFormat.format(getSalesInvoiceByIdResp?.invoiceAmount)}</Typography>
                                     </Box>
                                 </Box>
                                 <Box sx={{ padding: 1 }}>
@@ -348,7 +350,7 @@ const DetailInvoice = ({ session }) => {
                                         <Typography fontSize={14} fontWeight={500}>Paid Amount</Typography>
                                     </Box>
                                     <Box>
-                                        <Typography>{getSalesInvoiceByIdResp?.paidAmount}</Typography>
+                                        <Typography>{numFormat.format(getSalesInvoiceByIdResp?.paidAmount)}</Typography>
                                     </Box>
                                 </Box>
                                 <Box sx={{ padding: 1 }}>
@@ -356,7 +358,7 @@ const DetailInvoice = ({ session }) => {
                                         <Typography fontSize={14} fontWeight={500}>Unpaid Amount</Typography>
                                     </Box>
                                     <Box>
-                                        <Typography>{getSalesInvoiceByIdResp?.unpaidAmount}</Typography>
+                                        <Typography>{numFormat.format(getSalesInvoiceByIdResp?.unpaidAmount)}</Typography>
                                     </Box>
                                 </Box>
                             </Box>
@@ -410,7 +412,7 @@ const DetailInvoice = ({ session }) => {
                                     <TableRow key={ip.id}>
                                         <TableCell>{ip.ipNumber}</TableCell>
                                         <TableCell>{dateFns.format(new Date(ip.ipDate), "yyyy-MM-dd")}</TableCell>
-                                        <TableCell>{ip.paymentAmount}</TableCell>
+                                        <TableCell>{numFormat.format(ip.paymentAmount)}</TableCell>
                                         <TableCell>{ip.paymentMethod}</TableCell>
                                         {ip.paymentMethod == "TRANSFER" ? <>
                                             {/* <TableCell sx={{

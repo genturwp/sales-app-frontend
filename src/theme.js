@@ -14,6 +14,27 @@ const theme = createTheme({
       main: red.A400,
     },
   },
+  spacing: (factor) => `${0.25 * factor}rem`,
+  components: {
+    MuiTable: {
+      styleOverrides: {
+        root: {
+          fontSize: '1rem',
+        },
+      }
+    },
+    MuiTableCell: {
+      styleOverrides: {
+        root: {
+          padding: 4,
+          fontSize: '0.8rem',
+        },
+        head: {
+          fontSize: '1rem',
+        }
+      }
+    },
+  }
 });
 
 export default theme;

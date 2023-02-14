@@ -139,7 +139,7 @@ function Row(props) {
         router.push(detailSalesInvoice);
     }
     const dispatch = useDispatch();
-
+    let numFormat = new Intl.NumberFormat('de-DE');
     return (
         <React.Fragment>
             <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
@@ -161,9 +161,9 @@ function Row(props) {
                 <TableCell>{dateFns.format(new Date(row.paymentDueDate), "yyyy-MM-dd")}</TableCell>
                 <TableCell>{row.customerName}</TableCell>
                 <TableCell>{row.customerPhone}</TableCell>
-                <TableCell>{row.invoiceAmount}</TableCell>
-                <TableCell>{row.paidAmount}</TableCell>
-                <TableCell>{row.unpaidAmount}</TableCell>
+                <TableCell>{numFormat.format(row.invoiceAmount)}</TableCell>
+                <TableCell>{numFormat.format(row.paidAmount)}</TableCell>
+                <TableCell>{numFormat.format(row.unpaidAmount)}</TableCell>
 
                 <TableCell><Button onClick={() => handleCreateIncomingPayment(row)}>Incoming Payment</Button></TableCell>
             </TableRow>
@@ -190,7 +190,7 @@ function Row(props) {
                                                 <TableRow key={ip.id}>
                                                     <TableCell>{ip.ipNumber}</TableCell>
                                                     <TableCell>{dateFns.format(new Date(ip.ipDate), "yyyy-MM-dd")}</TableCell>
-                                                    <TableCell>{ip.paymentAmount}</TableCell>
+                                                    <TableCell>{numFormat.format(ip.paymentAmount)}</TableCell>
                                                     <TableCell>{ip.paymentMethod}</TableCell>
                                                     {ip.paymentMethod == "TRANSFER" ? <><TableCell sx={{
                                                         fontSize: 12
@@ -203,7 +203,7 @@ function Row(props) {
                                                         </>}
                                                 </TableRow>
                                             )) :
-                                                <TableRow><TableCell colSpan={4} align='center'><Typography>Incoming payment is empty</Typography></TableCell></TableRow>}
+                                                <TableRow><TableCell colSpan={4} align='center'><Typography fontSize={'0.8rem'}>Incoming payment is empty</Typography></TableCell></TableRow>}
                                         </TableBody>}
                                 </Table>
                             </TableContainer>
@@ -342,7 +342,7 @@ const Index = ({ session }) => {
                                 {(searchSalesInvResp.data.length > 0) ? searchSalesInvResp.data.map(row => (
                                     <Row key={row?.id} row={row} />
                                 )) :
-                                    <TableRow><TableCell colSpan={11} align='center'><Typography>Sales invoice is empty</Typography></TableCell></TableRow>}
+                                    <TableRow><TableCell colSpan={11} align='center'><Typography fontSize={'0.8rem'}>Sales invoice is empty</Typography></TableCell></TableRow>}
                             </TableBody>}
                         <TableFooter>
                             <TableRow>

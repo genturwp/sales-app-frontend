@@ -386,6 +386,7 @@ const Index = ({ session }) => {
         }
         return total;
     }
+    let numFormat = new Intl.NumberFormat('de-DE');
     return (
         <Box component={Paper} sx={{
             display: 'flex',
@@ -431,11 +432,11 @@ const Index = ({ session }) => {
                                 <TableCell>{row?.itemCategoryName}</TableCell>
                                 <TableCell>{row?.unitName}</TableCell>
                                 <TableCell>{row?.stockType}</TableCell>
-                                <TableCell>{row.inventories && row?.inventories.map(inv => (<Chip sx={{mr: 1}} size='small' key={inv.id} label={`${inv.warehouseName} (${inv.inventoryQuantity})`}/>))}</TableCell>
-                                <TableCell>{row.inventories && totalStock(row?.inventories)}</TableCell>
+                                <TableCell>{row.inventories && row?.inventories.map(inv => (<Chip sx={{mr: 1}} size='small' key={inv.id} label={`${inv.warehouseName} (${numFormat.format(inv.inventoryQuantity)})`}/>))}</TableCell>
+                                <TableCell>{numFormat.format(row.inventories) && numFormat.format(totalStock(row?.inventories))}</TableCell>
                             </TableRow>))
                             :
-                            <TableRow><TableCell colSpan={11} align='center'><Typography>Inventory is empty</Typography></TableCell></TableRow>}
+                            <TableRow><TableCell colSpan={11} align='center'><Typography fontSize={'0.8rem'}>Inventory is empty</Typography></TableCell></TableRow>}
 
                     </TableBody>}
                     <TableFooter>

@@ -100,6 +100,7 @@ const CreateSo = ({ session }) => {
     const [salesItems, setSalesItems] = React.useState([]);
     const [searchSalesItemsStr, setSearchSalesItemsStr] = React.useState('');
     const [grandDiscount, setGrandDiscount] = React.useState(0.0);
+    const [grandDiscountAmount, setGrandDiscountAmount] = React.useState(0.0);
 
     const [openSaveSoDraftNotif, setOpenSaveSoDraftNotif] = React.useState(false);
 
@@ -110,6 +111,8 @@ const CreateSo = ({ session }) => {
         setValue: customerSetValue,
         getValues: customerGetValues,
         register: customerRegister } = useForm();
+    
+    let numFormat = new Intl.NumberFormat('de-DE');
 
     React.useEffect(() => {
         dispatch(searchCustomer({ searchStr: searchCust, token: session.accessToken }));
@@ -196,13 +199,24 @@ const CreateSo = ({ session }) => {
         return totalAmount;
     }
 
-    const calculateGrandDiscountAmount = () => {
+    const calculateGrandDiscountAmount = (grandDiscount) => {
         let totalAmount = calculateTotalAmount();
-        return grandDiscount / 100 * totalAmount;
+        let _grandDiscountAmount = grandDiscount / 100 * totalAmount;
+        console.log("_grandDiscountAmount = ", _grandDiscountAmount)
+        setGrandDiscountAmount(_grandDiscountAmount);
+        setGrandDiscount(grandDiscount);
+    }
+
+    const calculateGrandDiscount = (discAmount) => {
+        let totalAmount = calculateTotalAmount();
+        let _grandDiscount = (discAmount / totalAmount) * 100;
+        setGrandDiscount(_grandDiscount); 
+        setGrandDiscountAmount(discAmount);
     }
 
     const calculateGrandTotal = () => {
-        let grandTotal = calculateTotalAmount() + parseFloat(shippingCost) - calculateGrandDiscountAmount();
+        let _shippingCost = shippingCost?shippingCost: 0;
+        let grandTotal = calculateTotalAmount() + parseFloat(_shippingCost) - parseFloat(grandDiscountAmount);
         return grandTotal;
     }
 
@@ -244,7 +258,7 @@ const CreateSo = ({ session }) => {
                 requestDiscount: requestDiscount,
                 grandDiscount: parseFloat(grandDiscount),
                 totalAmount: calculateTotalAmount(),
-                grandDiscountAmount: calculateGrandDiscountAmount(),
+                grandDiscountAmount: parseFloat(grandDiscountAmount),
                 grandTotal: calculateGrandTotal(),
                 afterTaxAmount: calculateAfterTax(),
                 salesOrderDetails: [...salesOrderItems]
@@ -287,11 +301,6 @@ const CreateSo = ({ session }) => {
     const handleOpenListSalesOrder = () => {
         router.push('/sales-order');
     }
-
-    // const setNumberValue = (val) => {
-
-    //     return isNaN(val) || (val === '') ? 0 : val;
-    // }
 
     return (
         <Box>
@@ -382,7 +391,7 @@ const CreateSo = ({ session }) => {
                     <Box sx={{
                         display: 'flex',
                         flexDirection: 'column',
-                        minWidth: 300,
+                        minWidth: 200,
                         mr: 3
                     }}>
                         <Box sx={{ display: 'flex', padding: 1 }}>
@@ -414,7 +423,7 @@ const CreateSo = ({ session }) => {
                     <Box sx={{
                         display: 'flex',
                         flexDirection: 'column',
-                        minWidth: 300,
+                        minWidth: 200,
                         mr: 3
                     }}>
                         <Box sx={{ display: 'flex', padding: 1 }}>
@@ -426,7 +435,8 @@ const CreateSo = ({ session }) => {
                             onChange={(evt) => setBillingAddress(evt.target.value)}
                             multiline
                             minRows={1}
-                            InputLabelProps={{ shrink: true }} />
+                            InputLabelProps={{ shrink: true }} 
+                            fullWidth/>
                         <LocalizationProvider dateAdapter={AdapterDateFns}>
                             <DatePicker
                                 label="Payment due date"
@@ -443,7 +453,6 @@ const CreateSo = ({ session }) => {
                     <Box sx={{
                         display: 'flex',
                         flexDirection: 'column',
-                        minWidth: 300,
                         mr: 3
                     }}>
                         <Box sx={{ display: 'flex', padding: 1 }}>
@@ -455,7 +464,8 @@ const CreateSo = ({ session }) => {
                             onChange={(evt) => setSalesNote(evt.target.value)}
                             multiline
                             minRows={1}
-                            InputLabelProps={{ shrink: true }} />
+                            InputLabelProps={{ shrink: true }} 
+                            fullWidth/>
                         <FormGroup>
                             <FormControlLabel control={<Checkbox value={requestDiscount} onChange={(evt, checked) => setRequestDiscount(checked)} />} label='Discount' />
                         </FormGroup>
@@ -594,7 +604,7 @@ const CreateSo = ({ session }) => {
                                 <TableCell align='right'>Inv. Qty</TableCell>
                                 <TableCell align='right'>Price</TableCell>
                                 <TableCell align='right'>Qty.</TableCell>
-                                <TableCell align='right'>Discount</TableCell>
+                                <TableCell align='right'>Discount (%)</TableCell>
                                 <TableCell align='right'>Dis. Amount</TableCell>
                                 <TableCell align='right'>Amount</TableCell>
                                 <TableCell align='right'>Total</TableCell>
@@ -649,8 +659,8 @@ const CreateSo = ({ session }) => {
                                     </TableCell>
                                     <TableCell><Typography fontSize={14}>{row.itemCode}</Typography></TableCell>
                                     <TableCell><Typography fontSize={14}>{row.itemUnit}</Typography></TableCell>
-                                    <TableCell align='right'><Typography fontSize={14}>{row.availableQty}</Typography></TableCell>
-                                    <TableCell align='right'><Typography fontSize={14}>{row.itemPrice}</Typography></TableCell>
+                                    <TableCell align='right'><Typography fontSize={14}>{numFormat.format(row.availableQty)}</Typography></TableCell>
+                                    <TableCell align='right'><Typography fontSize={14}>{numFormat.format(row.itemPrice)}</Typography></TableCell>
                                     <TableCell align='right'>
                                         <TextField onInput={(evt) => {
                                             let inp = evt.target.value;
@@ -675,8 +685,8 @@ const CreateSo = ({ session }) => {
                                             }
                                         }} sx={{ width: 100, fontSize: 14 }} size="small" margin='dense' value={row.itemDiscountAmount} type='number' onChange={(evt) => setDiscountAmount(idx, evt.target.value)} />
                                     </TableCell>
-                                    <TableCell align='right'><Typography fontSize={14}>{row.amount}</Typography></TableCell>
-                                    <TableCell align='right'><Typography fontSize={14} fontWeight={500}>{row.total}</Typography></TableCell>
+                                    <TableCell align='right'><Typography fontSize={14}>{numFormat.format(row.amount)}</Typography></TableCell>
+                                    <TableCell align='right'><Typography fontSize={14} fontWeight={500}>{numFormat.format(row.total)}</Typography></TableCell>
                                     <TableCell>
                                         <IconButton size='small' onClick={removeSalesItem}>
                                             <Remove sx={{ fontSize: 'medium' }} />
@@ -691,7 +701,7 @@ const CreateSo = ({ session }) => {
                                             <Typography fontSize={14} fontWeight={500}>Sub total</Typography>
                                         </TableCell>
                                         <TableCell align='right'>
-                                            <Typography fontSize={14} fontWeight={500}>{calculateTotalAmount()}</Typography>
+                                            <Typography fontSize={14} fontWeight={500}>{numFormat.format(calculateTotalAmount())}</Typography>
                                         </TableCell>
                                     </TableRow>
                                     <TableRow>
@@ -704,10 +714,15 @@ const CreateSo = ({ session }) => {
                                                 if (inp < 0) {
                                                     evt.target.value = -1 * inp;
                                                 }
-                                            }} sx={{ fontSize: 14, width: 100 }} value={grandDiscount} type='number' size='small' margin='dense' onChange={(evt) => setGrandDiscount(evt.target.value)} />
+                                            }} sx={{ fontSize: 14, width: 100 }} value={grandDiscount} type='number' size='small' margin='dense' onChange={(evt) => calculateGrandDiscountAmount(evt.target.value)} />
                                         </TableCell>
                                         <TableCell align='right'>
-                                            <Typography fontSize={14} fontWeight={500}>{calculateGrandDiscountAmount()}</Typography>
+                                            <TextField onInput={(evt) => {
+                                                let inp = evt.target.value;
+                                                if (inp < 0) {
+                                                    evt.target.value = -1 * inp;
+                                                }
+                                            }} sx={{ fontSize: 14, width: 100 }} value={grandDiscountAmount} type='number' size='small' margin='dense' onChange={(evt) => calculateGrandDiscount(evt.target.value)} />
                                         </TableCell>
                                     </TableRow>
                                     <TableRow>
@@ -715,7 +730,7 @@ const CreateSo = ({ session }) => {
                                             <Typography fontSize={14} fontWeight={500}>Grand total</Typography>
                                         </TableCell>
                                         <TableCell align='right'>
-                                            <Typography fontSize={14} fontWeight={500}>{calculateGrandTotal()}</Typography>
+                                            <Typography fontSize={14} fontWeight={500}>{numFormat.format(calculateGrandTotal())}</Typography>
                                         </TableCell>
                                     </TableRow>
                                     <TableRow>
@@ -723,7 +738,7 @@ const CreateSo = ({ session }) => {
                                             <Typography fontSize={14} fontWeight={500}>Shipping cost</Typography>
                                         </TableCell>
                                         <TableCell align='right'>
-                                            <Typography fontSize={14} fontWeight={500}>{shippingCost}</Typography>
+                                            <Typography fontSize={14} fontWeight={500}>{numFormat.format(shippingCost?shippingCost:0)}</Typography>
                                         </TableCell>
                                     </TableRow>
                                     <TableRow>
@@ -731,7 +746,7 @@ const CreateSo = ({ session }) => {
                                             <FormControlLabel control={<Checkbox value={tax} onChange={(evt, checked) => setTax(checked)} />} label={<Typography fontSize={14} fontWeight={500}>Tax</Typography>} />
                                         </TableCell>
                                         <TableCell align='right'>
-                                            <Typography fontSize={14} fontWeight={500}>{calculateTax()}</Typography>
+                                            <Typography fontSize={14} fontWeight={500}>{numFormat.format(calculateTax())}</Typography>
                                         </TableCell>
                                     </TableRow>
 
@@ -740,7 +755,7 @@ const CreateSo = ({ session }) => {
                                             <Typography fontSize={14} fontWeight={500}>Total</Typography>
                                         </TableCell>
                                         <TableCell align='right'>
-                                            <Typography fontSize={14} fontWeight={500}>{calculateAfterTax()}</Typography>
+                                            <Typography fontSize={14} fontWeight={500}>{numFormat.format(calculateAfterTax())}</Typography>
                                         </TableCell>
                                     </TableRow>
                                 </>}
