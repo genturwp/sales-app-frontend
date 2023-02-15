@@ -112,7 +112,11 @@ const CreateSo = ({ session }) => {
         getValues: customerGetValues,
         register: customerRegister } = useForm();
     
-    let numFormat = new Intl.NumberFormat('de-DE');
+        let numFormat = new Intl.NumberFormat('de-DE', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+            roundingMode: 'ceil',
+        });
 
     React.useEffect(() => {
         dispatch(searchCustomer({ searchStr: searchCust, token: session.accessToken }));

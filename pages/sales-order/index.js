@@ -144,7 +144,11 @@ function Row(props) {
         const detailSoUrl = `/sales-order/info/${row.id}`;
         router.push(detailSoUrl)
     }
-    let numFormat = new Intl.NumberFormat('de-DE');
+    let numFormat = new Intl.NumberFormat('de-DE', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+        roundingMode: 'ceil',
+    });
     return (
         <React.Fragment>
             
@@ -269,7 +273,7 @@ const Index = ({ session }) => {
                             {(searchSalesOrderResp.data.length > 0) ? searchSalesOrderResp.data.map(row => (
                                 <Row key={row?.id} row={row} />
                             )) :
-                                <TableRow><TableCell colSpan={11} align='center'><Typography>Sales order is empty</Typography></TableCell></TableRow>}
+                                <TableRow><TableCell colSpan={11} align='center'><Typography fontSize={'0.8rem'}>Sales order is empty</Typography></TableCell></TableRow>}
                         </TableBody>}
                     <TableFooter>
                         <TableRow>

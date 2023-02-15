@@ -386,7 +386,11 @@ const Index = ({ session }) => {
         }
         return total;
     }
-    let numFormat = new Intl.NumberFormat('de-DE');
+    let numFormat = new Intl.NumberFormat('de-DE', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+        roundingMode: 'ceil',
+    });
     return (
         <Box component={Paper} sx={{
             display: 'flex',

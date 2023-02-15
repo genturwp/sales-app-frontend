@@ -44,7 +44,11 @@ const SoDraft = ({ session }) => {
         dispatch(updateSODraftToOpen({ soId: id, token: session.accessToken }));
     }
 
-    let numFormat = new Intl.NumberFormat('de-DE');
+    let numFormat = new Intl.NumberFormat('de-DE', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+        roundingMode: 'ceil',
+    });
 
     return (
         <Box>
@@ -269,7 +273,7 @@ const SoDraft = ({ session }) => {
                                     <Typography fontSize={16} fontWeight={500}>Grand Discount</Typography>
                                 </TableCell>
                                 <TableCell>
-                                    <Typography fontSize={14} fontWeight={500} align='right'>{`${findSOByIdResp?.grandDiscount} %`}</Typography>
+                                    <Typography fontSize={14} fontWeight={500} align='right'>{`${numFormat.format(findSOByIdResp?.grandDiscount)} %`}</Typography>
                                 </TableCell>
                                 <TableCell>
                                     <Typography fontSize={14} fontWeight={500} align='right'>{`${numFormat.format(findSOByIdResp?.grandDiscountAmount)}`}</Typography>

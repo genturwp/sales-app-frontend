@@ -157,7 +157,7 @@ const Index = ({ session }) => {
                                 <TableCell>{row?.bankAccountNumber}</TableCell>
                                 <TableCell><Button onClick={() => handleEditOwnerBankInfo(row)}>Edit</Button></TableCell>
                             </TableRow>
-                        )) : <TableRow><TableCell colSpan={2} align='center'><Typography>Bank Reference is empty</Typography></TableCell></TableRow>}
+                        )) : <TableRow><TableCell colSpan={4} align='center'><Typography fontSize={'0.8rem'}>Bank Reference is empty</Typography></TableCell></TableRow>}
                     </TableBody>
                 </Table>
             </TableContainer>
@@ -170,6 +170,7 @@ const Index = ({ session }) => {
                         autoFocus
                         margin="dense"
                         label="Bank name"
+                        size='small'
                         fullWidth
                         variant='outlined'
                         value={ownerBankInfoReq?.bankName}
@@ -178,6 +179,7 @@ const Index = ({ session }) => {
                     <TextField
                         margin="dense"
                         label="Bank code"
+                        size='small'
                         fullWidth
                         variant='outlined'
                         value={ownerBankInfoReq?.bankCode}
@@ -186,6 +188,7 @@ const Index = ({ session }) => {
                     <TextField
                         margin="dense"
                         label="Bank Account Name"
+                        size='small'
                         fullWidth
                         variant='outlined'
                         value={ownerBankInfoReq?.bankAccountName}
@@ -193,7 +196,8 @@ const Index = ({ session }) => {
                     />
                     <TextField
                         margin="dense"
-                        label="Bank Account Code"
+                        label="Bank Account Number"
+                        size='small'
                         fullWidth
                         variant='outlined'
                         value={ownerBankInfoReq?.bankAccountNumber}

@@ -252,7 +252,11 @@ const DetailInvoice = ({ session }) => {
         dispatch(createCustomerBank({ customerBank: createCustomerBankReq, token: session.accessToken }));
     }
 
-    let numFormat = new Intl.NumberFormat('de-DE');
+    let numFormat = new Intl.NumberFormat('de-DE', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+        roundingMode: 'ceil',
+    });
 
     return (
         <Box>
@@ -425,7 +429,7 @@ const DetailInvoice = ({ session }) => {
                                                 <TableCell></TableCell><TableCell></TableCell>
                                             </>}
                                     </TableRow>
-                                )) : <TableRow><TableCell colSpan={6} align='center'><Typography>Incoming payment is empty</Typography></TableCell></TableRow>}
+                                )) : <TableRow><TableCell colSpan={6} align='center'><Typography fontSize={'0.8rem'}>Incoming payment is empty</Typography></TableCell></TableRow>}
                             </>}
                         </TableBody>
                     </Table>

@@ -184,9 +184,9 @@ const Index = ({ session }) => {
         dispatch(searchItemUnit({ token: session.accessToken, searchStr: itemUnitSearchStr }));
     }, [itemUnitSearchStr, session]);
 
-    React.useEffect(() => {
-        dispatch(searchMasterItem({ token: session.accessToken, searchStr: masterItemSearchStr }));
-    }, [masterItemSearchStr, session]);
+    // React.useEffect(() => {
+    //     dispatch(searchMasterItem({ token: session.accessToken, searchStr: masterItemSearchStr }));
+    // }, [masterItemSearchStr, session]);
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -287,7 +287,6 @@ const Index = ({ session }) => {
     }
 
     const onSaveMasterItem = (params) => {
-        console.log(params);
         dispatch(createMasterItem({ token: session.accessToken, data: params }));
         dispatch(searchMasterItem({ token: session.accessToken, searchStr: masterItemSearchStr }));
     }

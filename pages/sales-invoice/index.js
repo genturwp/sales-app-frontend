@@ -139,7 +139,11 @@ function Row(props) {
         router.push(detailSalesInvoice);
     }
     const dispatch = useDispatch();
-    let numFormat = new Intl.NumberFormat('de-DE');
+    let numFormat = new Intl.NumberFormat('de-DE', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+        roundingMode: 'ceil',
+    });
     return (
         <React.Fragment>
             <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
@@ -170,7 +174,7 @@ function Row(props) {
             <TableRow>
                 <TableCell sx={{ paddingBottom: 0, paddingTop: 0 }} colSpan={12}>
                     <Collapse in={open} timeout="auto" unmountOnExit>
-                        <Box sx={{ margin: 1, padding: 1 }} border={1} borderRadius={1} borderColor="#cccccc">
+                        <Box sx={{ margin: 1, padding: 1 }}>
                             <Typography fontWeight={600} fontSize={16}>Detail Payment</Typography>
                             <TableContainer>
                                 <Table sx={{ minWidth: 500 }} aria-label="custom pagination table" size='small'>
@@ -180,7 +184,7 @@ function Row(props) {
                                             <TableCell>Inc. Payment Date</TableCell>
                                             <TableCell>Payment Amount</TableCell>
                                             <TableCell>Payment method</TableCell>
-                                            <TableCell>Cust. Bank</TableCell>
+                                            
                                             <TableCell>Receive. Bank</TableCell>
                                         </TableRow>
                                     </TableHead>
@@ -192,12 +196,9 @@ function Row(props) {
                                                     <TableCell>{dateFns.format(new Date(ip.ipDate), "yyyy-MM-dd")}</TableCell>
                                                     <TableCell>{numFormat.format(ip.paymentAmount)}</TableCell>
                                                     <TableCell>{ip.paymentMethod}</TableCell>
-                                                    {ip.paymentMethod == "TRANSFER" ? <><TableCell sx={{
-                                                        fontSize: 12
-                                                    }}>{`${ip.custBankAccountName}-${ip.custBankName}-${ip.custBankAccountNo}`}</TableCell>
-                                                        <TableCell sx={{
-                                                            fontSize: 12
-                                                        }}>{`${ip.ownerBankAccountName}-${ip.ownerBankName}-${ip.ownerBankAccountNo}`}</TableCell></>
+                                                    {ip.paymentMethod == "TRANSFER" ? <>
+                                                        <TableCell sx={{fontSize: 12}}>{`${ip.ownerBankAccountName}-${ip.ownerBankName}-${ip.ownerBankAccountNo}`}</TableCell>
+                                                        </>
                                                         : <>
                                                             <TableCell></TableCell><TableCell></TableCell>
                                                         </>}
@@ -338,7 +339,6 @@ const Index = ({ session }) => {
                         </TableHead>
                         {searchSalesInvResp &&
                             <TableBody>
-                                {console.log(searchSalesInvResp)}
                                 {(searchSalesInvResp.data.length > 0) ? searchSalesInvResp.data.map(row => (
                                     <Row key={row?.id} row={row} />
                                 )) :

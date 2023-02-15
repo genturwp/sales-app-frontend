@@ -223,7 +223,11 @@ const InventoryMovement = ({ session }) => {
         dispatch(findAllInvMovement({ page: page, size: rowsPerPage, token: session.accessToken }));
 
     }
-    let numFormat = new Intl.NumberFormat('de-DE');
+    let numFormat = new Intl.NumberFormat('de-DE', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+        roundingMode: 'ceil',
+    });
     return (
         <Box component={Paper} sx={{
             display: 'flex',

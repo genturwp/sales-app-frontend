@@ -273,8 +273,11 @@ const Index = ({ session }) => {
         setEditedPrice(price);
     }
 
-    let numFormat = new Intl.NumberFormat('de-DE');
-
+    let numFormat = new Intl.NumberFormat('de-DE', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+        roundingMode: 'ceil',
+    });
     return (
         <Box component={Paper} sx={{
             display: 'flex',
@@ -355,7 +358,7 @@ const Index = ({ session }) => {
                                     <TableCell>{showCreateOrUpdatePriceButton(row)}</TableCell>
                                 </TableRow>))
                                 :
-                                <TableRow><TableCell colSpan={7} align='center'><Typography>Item is empty</Typography></TableCell></TableRow>}
+                                <TableRow><TableCell colSpan={7} align='center'><Typography fontSize={'0.8rem'}>Item is empty</Typography></TableCell></TableRow>}
 
                         </TableBody>}
                     <TableFooter>
