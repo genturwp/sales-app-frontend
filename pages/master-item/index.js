@@ -366,6 +366,7 @@ const Index = ({ session }) => {
                             <TableCell>Item Category</TableCell>
                             <TableCell>Unit</TableCell>
                             <TableCell>Stock Type</TableCell>
+                            <TableCell>Sold Qty</TableCell>
                             <TableCell></TableCell>
                         </TableRow>
                     </TableHead>
@@ -377,7 +378,8 @@ const Index = ({ session }) => {
                                 <TableCell>{row?.itemCategoryName}</TableCell>
                                 <TableCell>{row?.unitName}</TableCell>
                                 <TableCell>{row?.stockType}</TableCell>
-                                <TableCell><Button type='button' variant='contained' size='small' onClick={() => handleOpenUpdateMasterItemFormDialog(row)}>Edit</Button></TableCell>
+                                <TableCell>{row?.soldQty}</TableCell>
+                                <TableCell><Button type='button' disabled={row?.soldQty>0} variant='contained' size='small' onClick={() => handleOpenUpdateMasterItemFormDialog(row)}>Edit</Button></TableCell>
                             </TableRow>))
                             :
                             <TableRow><TableCell colSpan={6} align='center'><Typography fontSize={'0.8rem'}>Master item is empty</Typography></TableCell></TableRow>}

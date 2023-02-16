@@ -87,7 +87,7 @@ const SoDraft = ({ session }) => {
                             <Button variant='contained' size='small' onClick={() => router.push('/sales-order')}>Back</Button>
                         </Box>
                         <Box>
-                            <Button variant='contained' size='small' onClick={updateSoToOpen} disabled={findSOByIdResp?.soStatus === 'OPEN'}>Create SO</Button>
+                            <Button variant='contained' size='small' onClick={updateSoToOpen} disabled={findSOByIdResp?.soStatus === 'OPEN' || findSOByIdResp?.soStatus === 'PARTIAL' || findSOByIdResp?.soStatus === 'CLOSED'}>Create SO</Button>
                         </Box>
                     </Box>
                 </Box>

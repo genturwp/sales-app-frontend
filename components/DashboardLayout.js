@@ -113,7 +113,6 @@ export default function DashboardLayout({ children }) {
 
   return (
     <Box sx={{ display: 'flex' }}>
-      {console.log(session?.user.roles)}
       <CssBaseline />
       <AppBar position="fixed" open={open}>
         <Toolbar>
