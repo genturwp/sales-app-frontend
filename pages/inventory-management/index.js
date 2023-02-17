@@ -446,7 +446,7 @@ const Index = ({ session }) => {
                     <TableFooter>
                         <TableRow>
                             <TablePagination
-                                rowsPerPageOptions={[5, 10, 25, { label: 'All', value: -1 }]}
+                                rowsPerPageOptions={[5, 10, 25, 50]}
                                 colSpan={11}
                                 count={searchInventoryItemResp?.totalRecords == undefined ? 0 : searchInventoryItemResp?.totalRecords}
                                 rowsPerPage={rowsPerPage}

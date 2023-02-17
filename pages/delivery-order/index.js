@@ -228,6 +228,15 @@ const Index = ({ session }) => {
     const handleSelectedDoReqStatus = (evt) => {
         setFilterDoReqStatus(evt.target.value);
     }
+
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
     return (
         <Box component={Paper} sx={{
             display: 'flex',
@@ -293,6 +302,26 @@ const Index = ({ session }) => {
                             )) :
                                 <TableRow><TableCell colSpan={8} align='center'><Typography>Delivery order request is empty</Typography></TableCell></TableRow>}
                         </TableBody>}
+                        <TableFooter>
+                        <TableRow>
+                            <TablePagination
+                                rowsPerPageOptions={[5, 10, 25, 50]}
+                                colSpan={11}
+                                count={searchDOReqResp?.totalRecords == undefined ? 0 : searchDOReqResp?.totalRecords}
+                                rowsPerPage={rowsPerPage}
+                                page={searchDOReqResp?.totalRecords == undefined ? 0 : page}
+                                SelectProps={{
+                                    inputProps: {
+                                        'aria-label': 'rows per page',
+                                    },
+                                    native: true,
+                                }}
+                                onPageChange={handleChangePage}
+                                onRowsPerPageChange={handleChangeRowsPerPage}
+                                ActionsComponent={TablePaginationActions}
+                            />
+                        </TableRow>
+                    </TableFooter>
                 </Table>
             </TableContainer>
         </Box>);
