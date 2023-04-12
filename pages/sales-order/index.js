@@ -151,7 +151,7 @@ function Row(props) {
     });
     return (
         <React.Fragment>
-            
+
             <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
                 {/* <TableCell>
                     <IconButton
@@ -168,11 +168,11 @@ function Row(props) {
                 <TableCell align="right">{row.soStatus}</TableCell>
                 <TableCell align="right">{dateFns.format(new Date(row.soDate), "yyyy-MM-dd")}</TableCell>
                 <TableCell align="right">{row.customerName}</TableCell>
-                <TableCell align="right">{row.grandDiscount != null?numFormat.format(row.grandDiscount): 0}</TableCell>
-                <TableCell align="right">{row.totalAmount != null?numFormat.format(row.totalAmount): 0}</TableCell>
-                <TableCell align="right">{row.grandTotal != null?numFormat.format(row.grandTotal) : 0}</TableCell>
-                <TableCell align="right">{row.taxAmount != null? numFormat.format(row.taxAmount): 0}</TableCell>
-                <TableCell align="right">{row.afterTaxAmount != null?numFormat.format(row.afterTaxAmount): 0}</TableCell>
+                <TableCell align="right">{row.grandDiscount != null ? numFormat.format(row.grandDiscount) : 0}</TableCell>
+                <TableCell align="right">{row.totalAmount != null ? numFormat.format(row.totalAmount) : 0}</TableCell>
+                <TableCell align="right">{row.grandTotal != null ? numFormat.format(row.grandTotal) : 0}</TableCell>
+                <TableCell align="right">{row.taxAmount != null ? numFormat.format(row.taxAmount) : 0}</TableCell>
+                <TableCell align="right">{row.afterTaxAmount != null ? numFormat.format(row.afterTaxAmount) : 0}</TableCell>
                 <TableCell><Button onClick={handleOpenDetailSo}>Detail So</Button></TableCell>
             </TableRow>
             {/* <TableRow>
@@ -207,6 +207,12 @@ const Index = ({ session }) => {
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
     const [searchSO, setSearchSO] = React.useState('');
 
+    let numFormat = new Intl.NumberFormat('de-DE', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+        roundingMode: 'ceil',
+    });
+
     React.useEffect(() => {
         dispatch(searchSalesOrder({ page: page, size: rowsPerPage, searchStr: searchSO, token: session.accessToken }));
     }, [page, rowsPerPage, searchSO, session]);
@@ -223,6 +229,12 @@ const Index = ({ session }) => {
     const handleSearchSO = (evt) => {
         setSearchSO(evt.target.value);
     }
+
+    const handleOpenDetailSo = (row) => {
+        const detailSoUrl = `/sales-order/info/${row.id}`;
+        router.push(detailSoUrl)
+    }
+
     const debouncedSearchSO = React.useMemo(() => debounce(handleSearchSO, 300), []);
     const handleOpenCreateSalesOrder = () => {
         router.push('/sales-order/create-so');
@@ -271,7 +283,21 @@ const Index = ({ session }) => {
                     {searchSalesOrderResp &&
                         <TableBody>
                             {(searchSalesOrderResp.data.length > 0) ? searchSalesOrderResp.data.map(row => (
-                                <Row key={row?.id} row={row} />
+                                // <Row key={row?.id} row={row} />
+                                <TableRow key={row?.id}>
+                                    <TableCell component="th" scope="row">
+                                        {row.soNumber}
+                                    </TableCell>
+                                    <TableCell align="right">{row.soStatus}</TableCell>
+                                    <TableCell align="right">{dateFns.format(new Date(row.soDate), "yyyy-MM-dd")}</TableCell>
+                                    <TableCell align="right">{row.customerName}</TableCell>
+                                    <TableCell align="right">{row.grandDiscount != null ? numFormat.format(row.grandDiscount) : 0}</TableCell>
+                                    <TableCell align="right">{row.totalAmount != null ? numFormat.format(row.totalAmount) : 0}</TableCell>
+                                    <TableCell align="right">{row.grandTotal != null ? numFormat.format(row.grandTotal) : 0}</TableCell>
+                                    <TableCell align="right">{row.taxAmount != null ? numFormat.format(row.taxAmount) : 0}</TableCell>
+                                    <TableCell align="right">{row.afterTaxAmount != null ? numFormat.format(row.afterTaxAmount) : 0}</TableCell>
+                                    <TableCell><Button onClick={() => handleOpenDetailSo(row)}>Detail So</Button></TableCell>
+                                </TableRow>
                             )) :
                                 <TableRow><TableCell colSpan={11} align='center'><Typography fontSize={'0.8rem'}>Sales order is empty</Typography></TableCell></TableRow>}
                         </TableBody>}

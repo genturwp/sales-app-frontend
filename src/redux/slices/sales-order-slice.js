@@ -60,6 +60,15 @@ export const searchSalesOrderBySoNumber = createAsyncThunk(
     }
 )
 
+export const updateSOTransaction = createAsyncThunk(
+    `${namespace}/updateSOTransaction`,
+    async (params, thunkAPI) => {
+        const endpointUrl = `${CONST.API_ENDPOINT}/sales-management/so/update-transaction`;
+        const resp = await axios.post(endpointUrl, params.soDraft, { headers: { 'Authorization': `Bearer ${params.token}`, 'Content-Type': 'application/json' } });
+        return resp.data.payload;
+    }
+);
+
 const salesOrderSlice = createSlice({
     name: namespace,
     initialState: {
@@ -81,8 +90,20 @@ const salesOrderSlice = createSlice({
         searchSoBySoNumberLoading: false,
         searchSoBySoNumberResp: null,
         searchSoBySoNumberError: null,
+        updateSOTransactionLoading: false,
+        updateSOTransactionResp: null,
+        updateSOTransactionError: null,
     },
     reducers: {
+        resetUpdateSOTransactionLoading: (state) => {
+            state.updateSOTransactionLoading = false;
+        },
+        resetUpdateSOTransactionResp: (state) => {
+            state.updateSOTransactionResp = null;
+        },
+        resetUpdateSOTransactionError: (state) => {
+            state.updateSOTransactionError = null;
+        },
         resetCreateSODraftLoading: (state) => {
             state.createSODraftLoading = false;
         },
@@ -230,6 +251,21 @@ const salesOrderSlice = createSlice({
                 state.searchSoBySoNumberResp = null;
                 state.searchSoBySoNumberError = action.error;
             })
+            .addCase(updateSOTransaction.pending, (state, action) => {
+                state.updateSOTransactionLoading = true;
+                state.updateSOTransactionResp = null;
+                state.updateSOTransactionError = null;
+            })
+            .addCase(updateSOTransaction.fulfilled, (state, action) => {
+                state.updateSOTransactionLoading = false;
+                state.updateSOTransactionResp = action.payload;
+                state.updateSOTransactionError = null;
+            })
+            .addCase(updateSOTransaction.rejected, (state, action) => {
+                state.updateSOTransactionLoading = false;
+                state.updateSOTransactionResp = null;
+                state.updateSOTransactionError = action.error;
+            })
     }
 });
 
@@ -237,7 +273,7 @@ export const {
 resetCreateSODraftError, resetCreateSODraftLoading, resetCreateSODraftResp, resetSearchSalesOrderError, 
 resetSearchSalesOrderLoading, resetSearchSalesOrderResp, resetUpdateSODraftToOpenError, resetUpdateSODraftToOpenLoading, resetUpdateSODraftToOpenResp,
 resetSearchSalesItemsError, resetSearchSalesItemsLoading, resetSearchSalesItemsResp, resetFindSOByIdError, resetFindSOByIdLoading, resetFindSOByIdResp,
-resetSearchSoBySoNumberLoading, resetSearchSoBySoNumberResp, resetSearchSoBySoNumberError
+resetSearchSoBySoNumberLoading, resetSearchSoBySoNumberResp, resetSearchSoBySoNumberError, resetUpdateSOTransactionError, resetUpdateSOTransactionLoading, resetUpdateSOTransactionResp
 } = salesOrderSlice.actions;
 
 export default salesOrderSlice.reducer;

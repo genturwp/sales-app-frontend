@@ -267,7 +267,7 @@ const CreateSo = ({ session }) => {
                 afterTaxAmount: calculateAfterTax(),
                 salesOrderDetails: [...salesOrderItems]
             }
-            console.log(soDraft);
+            
             dispatch(createSODraft({ soDraft: soDraft, token: session.accessToken }));
         }
     }
@@ -643,7 +643,7 @@ const CreateSo = ({ session }) => {
                                                     amount: 0,
                                                     total: 0,
                                                     itemDiscountAmount: 0,
-                                                    availableQty: newValue?.availableQty,
+                                                    inventoryQty: newValue?.inventoryQty,
                                                 };
                                                 let saleItms = [...salesItems];
                                                 saleItms[idx] = saleItm;
@@ -663,7 +663,7 @@ const CreateSo = ({ session }) => {
                                     </TableCell>
                                     <TableCell><Typography fontSize={14}>{row.itemCode}</Typography></TableCell>
                                     <TableCell><Typography fontSize={14}>{row.itemUnit}</Typography></TableCell>
-                                    <TableCell align='right'><Typography fontSize={14}>{numFormat.format(row.availableQty)}</Typography></TableCell>
+                                    <TableCell align='right'><Typography fontSize={14}>{numFormat.format(row.inventoryQty)}</Typography></TableCell>
                                     <TableCell align='right'><Typography fontSize={14}>{numFormat.format(row.itemPrice)}</Typography></TableCell>
                                     <TableCell align='right'>
                                         <TextField onInput={(evt) => {
@@ -692,7 +692,7 @@ const CreateSo = ({ session }) => {
                                     <TableCell align='right'><Typography fontSize={14}>{numFormat.format(row.amount)}</Typography></TableCell>
                                     <TableCell align='right'><Typography fontSize={14} fontWeight={500}>{numFormat.format(row.total)}</Typography></TableCell>
                                     <TableCell>
-                                        <IconButton size='small' onClick={removeSalesItem}>
+                                        <IconButton size='small' onClick={() => removeSalesItem(idx)}>
                                             <Remove sx={{ fontSize: 'medium' }} />
                                         </IconButton>
                                     </TableCell>
