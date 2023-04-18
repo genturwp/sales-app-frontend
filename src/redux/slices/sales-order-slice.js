@@ -69,6 +69,17 @@ export const updateSOTransaction = createAsyncThunk(
     }
 );
 
+export const cancelSOTransaction = createAsyncThunk(
+    `${namespace}/cancelSOTransaction`,
+    async (params, thunkAPI) => {
+        const endpointUrl = `${CONST.API_ENDPOINT}/sales-management/so/cancel`;
+        const reqParams = new URLSearchParams();
+        reqParams.append('soId', params.soId);
+        const resp = await axios.post(endpointUrl, reqParams, { headers: { 'Authorization': `Bearer ${params.token}`, 'Content-Type': 'application/x-www-form-urlencoded' } });
+        return resp.data.payload;
+    }
+);
+
 const salesOrderSlice = createSlice({
     name: namespace,
     initialState: {
@@ -93,8 +104,20 @@ const salesOrderSlice = createSlice({
         updateSOTransactionLoading: false,
         updateSOTransactionResp: null,
         updateSOTransactionError: null,
+        cancelSOTransactionLoading: false,
+        cancelSOTransactionResp: null,
+        cancelSOTransactionError: null,
     },
     reducers: {
+        resetCancelSOTransactionLoading : (state) => {
+            state.cancelSOTransactionLoading = false;
+        },
+        resetCancelSOTransactionResp: (state) => {
+            state.cancelSOTransactionResp = null;
+        },
+        resetCancelSOTransactionError: (state) => {
+            state.cancelSOTransactionError = null;
+        },
         resetUpdateSOTransactionLoading: (state) => {
             state.updateSOTransactionLoading = false;
         },
@@ -266,6 +289,21 @@ const salesOrderSlice = createSlice({
                 state.updateSOTransactionResp = null;
                 state.updateSOTransactionError = action.error;
             })
+            .addCase(cancelSOTransaction.pending, (state, action) => {
+                state.cancelSOTransactionLoading = true;
+                state.cancelSOTransactionResp = null;
+                state.cancelSOTransactionError = null;
+            })
+            .addCase(cancelSOTransaction.fulfilled, (state, action) => {
+                state.cancelSOTransactionLoading = false;
+                state.cancelSOTransactionResp = action.payload;
+                state.cancelSOTransactionError = null;
+            })
+            .addCase(cancelSOTransaction.rejected, (state, action) => {
+                state.cancelSOTransactionLoading = false;
+                state.cancelSOTransactionResp = null;
+                state.cancelSOTransactionError = action.error;
+            })
     }
 });
 
@@ -273,7 +311,8 @@ export const {
 resetCreateSODraftError, resetCreateSODraftLoading, resetCreateSODraftResp, resetSearchSalesOrderError, 
 resetSearchSalesOrderLoading, resetSearchSalesOrderResp, resetUpdateSODraftToOpenError, resetUpdateSODraftToOpenLoading, resetUpdateSODraftToOpenResp,
 resetSearchSalesItemsError, resetSearchSalesItemsLoading, resetSearchSalesItemsResp, resetFindSOByIdError, resetFindSOByIdLoading, resetFindSOByIdResp,
-resetSearchSoBySoNumberLoading, resetSearchSoBySoNumberResp, resetSearchSoBySoNumberError, resetUpdateSOTransactionError, resetUpdateSOTransactionLoading, resetUpdateSOTransactionResp
+resetSearchSoBySoNumberLoading, resetSearchSoBySoNumberResp, resetSearchSoBySoNumberError, resetUpdateSOTransactionError, resetUpdateSOTransactionLoading, resetUpdateSOTransactionResp,
+resetCancelSOTransactionError, resetCancelSOTransactionLoading, resetCancelSOTransactionResp
 } = salesOrderSlice.actions;
 
 export default salesOrderSlice.reducer;

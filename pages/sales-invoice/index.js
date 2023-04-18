@@ -159,6 +159,7 @@ function Row(props) {
                 <TableCell component="th" scope="row">
                     <Link href={`/sales-order/info/${row.soId}`}>{row.soNumber}</Link>
                 </TableCell>
+                <TableCell><Chip label={row.soStatus} color='warning'/></TableCell>
                 <TableCell>{row.invNumber}</TableCell>
                 <TableCell><Chip label={row.invStatus} color='primary'/></TableCell>
                 <TableCell>{row.invoiceDate != null ? dateFns.format(new Date(row.invoiceDate), "yyyy-MM-dd") : ''}</TableCell>
@@ -325,6 +326,7 @@ const Index = ({ session }) => {
                             <TableRow>
                                 <TableCell align="right"></TableCell>
                                 <TableCell>SO Number</TableCell>
+                                <TableCell>SO Status</TableCell>
                                 <TableCell>Inv Number</TableCell>
                                 <TableCell>Inv Status</TableCell>
                                 <TableCell>Inv Create Date</TableCell>

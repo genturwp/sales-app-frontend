@@ -14,11 +14,17 @@ import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableRow from '@mui/material/TableRow';
 import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 import * as dateFns from 'date-fns';
 import { useSelector, useDispatch } from 'react-redux';
 
 import {
-    findSOById, resetFindSOByIdError, resetFindSOByIdLoading, resetFindSOByIdResp, updateSODraftToOpen
+    findSOById, resetFindSOByIdError, resetFindSOByIdLoading, resetFindSOByIdResp, updateSODraftToOpen, cancelSOTransaction,
+    resetCancelSOTransactionError
 } from '../../../src/redux/slices/sales-order-slice';
 
 const SoDraft = ({ session }) => {
@@ -31,17 +37,24 @@ const SoDraft = ({ session }) => {
         findSOByIdResp,
         findSOByIdError,
         updateSODraftToOpenResp,
-        updateSODraftToOpenError
+        updateSODraftToOpenError,
+        cancelSOTransactionLoading,
+        cancelSOTransactionResp,
+        cancelSOTransactionError
     } = useSelector((state) => state.salesOrder);
 
     const dispatch = useDispatch();
 
     React.useEffect(() => {
         dispatch(findSOById({ soId: id, token: session.accessToken }));
-    }, [id, updateSODraftToOpenResp]);
+    }, [id, updateSODraftToOpenResp, cancelSOTransactionResp]);
 
     const updateSoToOpen = () => {
         dispatch(updateSODraftToOpen({ soId: id, token: session.accessToken }));
+    }
+
+    const cancelSo = () => {
+        dispatch(cancelSOTransaction({soId: id, token: session.accessToken}));
     }
 
     let numFormat = new Intl.NumberFormat('de-DE', {
@@ -49,6 +62,10 @@ const SoDraft = ({ session }) => {
         maximumFractionDigits: 2,
         roundingMode: 'ceil',
     });
+
+    const handleCloseCancelError = () => {
+        dispatch(resetCancelSOTransactionError());
+    }
 
     return (
         <Box>
@@ -87,10 +104,13 @@ const SoDraft = ({ session }) => {
                             <Button variant='contained' size='small' onClick={() => router.push('/sales-order')}>Back</Button>
                         </Box>
                         <Box sx={{mr: 1}}>
-                            <Button variant='contained' size='small' onClick={updateSoToOpen} disabled={findSOByIdResp?.soStatus === 'OPEN' || findSOByIdResp?.soStatus === 'PARTIAL' || findSOByIdResp?.soStatus === 'CLOSED'}>Create SO</Button>
+                            <Button variant='contained' size='small' onClick={updateSoToOpen} disabled={findSOByIdResp?.soStatus === 'OPEN' || findSOByIdResp?.soStatus === 'PARTIAL' || findSOByIdResp?.soStatus === 'CLOSED' || findSOByIdResp?.soStatus === 'CANCEL'}>Create SO</Button>
                         </Box>
                         <Box sx={{mr: 1}}>
                             <Button variant='contained' size='small' disabled={findSOByIdResp?.soStatus !== 'DRAFT' && findSOByIdResp?.soStatus !== 'OPEN'} onClick={() => router.push(`/sales-order/edit/${findSOByIdResp?.id}`)}>Edit SO</Button>
+                        </Box>
+                        <Box sx={{mr: 1}}>
+                            <Button variant='contained' size='small' onClick={cancelSo} disabled={findSOByIdResp?.soStatus === 'PARTIAL' || findSOByIdResp?.soStatus === 'CLOSED' || findSOByIdResp?.soStatus === 'CANCEL'}>Cancel SO</Button>
                         </Box>
                     </Box>
                 </Box>
@@ -310,6 +330,20 @@ const SoDraft = ({ session }) => {
                     </Table>
                 </TableContainer>
             </Box>
+            <Dialog
+                open={cancelSOTransactionError !== null}
+                onClose={handleCloseCancelError}
+            >
+                <DialogTitle id="alert-dialog-title">
+                    {"Delivery order or sales invoice is proceeded"}
+                </DialogTitle>
+                
+                <DialogActions>
+                    <Button onClick={handleCloseCancelError} autoFocus>
+                        Ok
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Box>);
 }
 

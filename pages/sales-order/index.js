@@ -36,7 +36,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Collapse from '@mui/material/Collapse';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-
+import Chip from '@mui/material/Chip';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -288,7 +288,7 @@ const Index = ({ session }) => {
                                     <TableCell component="th" scope="row">
                                         {row.soNumber}
                                     </TableCell>
-                                    <TableCell align="right">{row.soStatus}</TableCell>
+                                    <TableCell align="right"><Chip label={row.soStatus} color='warning'/></TableCell>
                                     <TableCell align="right">{dateFns.format(new Date(row.soDate), "yyyy-MM-dd")}</TableCell>
                                     <TableCell align="right">{row.customerName}</TableCell>
                                     <TableCell align="right">{row.grandDiscount != null ? numFormat.format(row.grandDiscount) : 0}</TableCell>

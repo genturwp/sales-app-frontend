@@ -50,7 +50,8 @@ const SoUpdate = ({ session }) => {
     const {
         findSOByIdResp,
         updateSOTransactionResp,
-        searchSalesItemsResp
+        searchSalesItemsResp,
+        updateSOTransactionError
     } = useSelector((state) => state.salesOrder);
 
     const dispatch = useDispatch();
@@ -233,6 +234,10 @@ const SoUpdate = ({ session }) => {
         };
 
         dispatch(updateSOTransaction({ soDraft: updatedSO, token: session.accessToken }))
+    }
+
+    const handleCloseSoUpdateErrorDialog = () => {
+        dispatch(resetUpdateSOTransactionError());
     }
 
     return (
@@ -578,6 +583,20 @@ const SoUpdate = ({ session }) => {
                 
                 <DialogActions>
                     <Button onClick={handleCloseSoUpdateDialog} autoFocus>
+                        Ok
+                    </Button>
+                </DialogActions>
+            </Dialog>
+            <Dialog
+                open={updateSOTransactionError !== null}
+                onClose={handleCloseSoUpdateErrorDialog}
+            >
+                <DialogTitle id="alert-dialog-title">
+                    {"Delivery order or sales invoice is proceeded"}
+                </DialogTitle>
+                
+                <DialogActions>
+                    <Button onClick={handleCloseSoUpdateErrorDialog} autoFocus>
                         Ok
                     </Button>
                 </DialogActions>
