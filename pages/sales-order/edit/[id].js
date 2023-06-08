@@ -6,22 +6,14 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
-import Chip from '@mui/material/Chip';
-import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
+import Autocomplete from '@mui/material/Autocomplete';
 import Checkbox from '@mui/material/Checkbox';
-import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import * as dateFns from 'date-fns';
 import { useSelector, useDispatch } from 'react-redux';
 import IconButton from '@mui/material/IconButton';
-import AddCircleOutlineRoundedIcon from '@mui/icons-material/AddCircleOutlineRounded';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Button from '@mui/material/Button';
 import Table from '@mui/material/Table';
@@ -29,13 +21,8 @@ import TableHead from '@mui/material/TableHead';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
-import TableFooter from '@mui/material/TableFooter';
 import TableRow from '@mui/material/TableRow';
-import RemoveIcon from '@mui/icons-material/Remove';
-import Alert from '@mui/material/Alert';
-import { Check, Remove } from '@mui/icons-material';
-
-import { useForm, Controller } from 'react-hook-form';
+import { Remove } from '@mui/icons-material';
 
 
 import {
@@ -91,7 +78,13 @@ const SoUpdate = ({ session }) => {
 
     React.useEffect(() => {
         if (findSOByIdResp?.salesOrderDetails.length > 0) {
-
+            if (findSOByIdResp.taxAmount > 0) {
+                setTax(true)
+            }
+            if (findSOByIdResp.grandDiscount > 0) {
+                setGrandDiscount(findSOByIdResp.grandDiscount);
+                setGrandDiscountAmount(findSOByIdResp.grandDiscountAmount);
+            }
             let mappedSalesItem = findSOByIdResp?.salesOrderDetails.map(dat => ({
                 itemName: dat.itemName,
                 itemCode: dat.itemCode,
@@ -217,10 +210,6 @@ const SoUpdate = ({ session }) => {
         maximumFractionDigits: 2,
         roundingMode: 'ceil',
     });
-
-    const onCancelEditSO = () => {
-
-    }
 
     const onSaveEditSO = () => {
         let updatedSO = {

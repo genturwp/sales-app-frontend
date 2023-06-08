@@ -21,7 +21,9 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import * as dateFns from 'date-fns';
 import { useSelector, useDispatch } from 'react-redux';
+import * as CONST from '../../../const';
 
+import axios from 'axios';
 import {
     findSOById, resetFindSOByIdError, resetFindSOByIdLoading, resetFindSOByIdResp, updateSODraftToOpen, cancelSOTransaction,
     resetCancelSOTransactionError
@@ -54,7 +56,7 @@ const SoDraft = ({ session }) => {
     }
 
     const cancelSo = () => {
-        dispatch(cancelSOTransaction({soId: id, token: session.accessToken}));
+        dispatch(cancelSOTransaction({ soId: id, token: session.accessToken }));
     }
 
     let numFormat = new Intl.NumberFormat('de-DE', {
@@ -66,6 +68,30 @@ const SoDraft = ({ session }) => {
     const handleCloseCancelError = () => {
         dispatch(resetCancelSOTransactionError());
     }
+
+    const handlePrintSO = async () => {
+        const endpointUrl = `${CONST.API_ENDPOINT}/sales-management/so/pdf/${id}`;
+        const printResp = await axios({
+            url: endpointUrl,
+            responseType: 'blob',
+            headers: { 'Authorization': `Bearer ${session.accessToken}` }
+        });
+        const soPdf = new Blob([printResp.data], { type: 'application/pdf' });
+        var blobURL = URL.createObjectURL(soPdf);
+
+        var iframe = document.createElement('iframe'); //load content in an iframe to print later
+        document.body.appendChild(iframe);
+
+        iframe.style.display = 'none';
+        iframe.src = blobURL;
+        iframe.onload = function () {
+            setTimeout(function () {
+                iframe.focus();
+                iframe.contentWindow.print();
+            }, 1);
+        };
+    }
+
 
     return (
         <Box>
@@ -83,7 +109,7 @@ const SoDraft = ({ session }) => {
                     padding: 1,
                     justifyContent: 'space-between',
                     alignItems: 'center',
-                }}> 
+                }}>
                     <Box sx={{
                         display: 'flex',
                         flexDirection: 'row',
@@ -99,17 +125,17 @@ const SoDraft = ({ session }) => {
                             <Chip label={findSOByIdResp?.soStatus} color='primary' size='small' sx={{ fontWeight: 500 }} />
                         </Box>
                     </Box>
-                    <Box sx={{display: 'flex', flexDirection: 'row', minWidth: 190}}>
-                        <Box sx={{mr: 1}}>
+                    <Box sx={{ display: 'flex', flexDirection: 'row', minWidth: 190 }}>
+                        <Box sx={{ mr: 1 }}>
                             <Button variant='contained' size='small' onClick={() => router.push('/sales-order')}>Back</Button>
                         </Box>
-                        <Box sx={{mr: 1}}>
+                        <Box sx={{ mr: 1 }}>
                             <Button variant='contained' size='small' onClick={updateSoToOpen} disabled={findSOByIdResp?.soStatus === 'OPEN' || findSOByIdResp?.soStatus === 'PARTIAL' || findSOByIdResp?.soStatus === 'CLOSED' || findSOByIdResp?.soStatus === 'CANCEL'}>Create SO</Button>
                         </Box>
-                        <Box sx={{mr: 1}}>
+                        <Box sx={{ mr: 1 }}>
                             <Button variant='contained' size='small' disabled={findSOByIdResp?.soStatus !== 'DRAFT' && findSOByIdResp?.soStatus !== 'OPEN'} onClick={() => router.push(`/sales-order/edit/${findSOByIdResp?.id}`)}>Edit SO</Button>
                         </Box>
-                        <Box sx={{mr: 1}}>
+                        <Box sx={{ mr: 1 }}>
                             <Button variant='contained' size='small' onClick={cancelSo} disabled={findSOByIdResp?.soStatus === 'PARTIAL' || findSOByIdResp?.soStatus === 'CLOSED' || findSOByIdResp?.soStatus === 'CANCEL'}>Cancel SO</Button>
                         </Box>
                     </Box>
@@ -176,7 +202,7 @@ const SoDraft = ({ session }) => {
                                 <Typography fontSize={14} fontWeight={500}>Shipping Date</Typography>
                             </Box>
                             <Box>
-                                <Typography>{findSOByIdResp?.shippingDate?dateFns.format(new Date(findSOByIdResp.shippingDate), "yyyy-MM-dd"):dateFns.format(new Date(), "yyyy-MM-dd")}</Typography>
+                                <Typography>{findSOByIdResp?.shippingDate ? dateFns.format(new Date(findSOByIdResp.shippingDate), "yyyy-MM-dd") : dateFns.format(new Date(), "yyyy-MM-dd")}</Typography>
                             </Box>
                         </Box>
                         <Box sx={{ padding: 1 }}>
@@ -219,7 +245,7 @@ const SoDraft = ({ session }) => {
                                 <Typography fontSize={14} fontWeight={500}>Payment Due Date</Typography>
                             </Box>
                             <Box>
-                                <Typography>{findSOByIdResp?.paymentDueDate?dateFns.format(new Date(findSOByIdResp.paymentDueDate), "yyyy-MM-dd"): dateFns.format(new Date(), "yyyy-MM-dd")}</Typography>
+                                <Typography>{findSOByIdResp?.paymentDueDate ? dateFns.format(new Date(findSOByIdResp.paymentDueDate), "yyyy-MM-dd") : dateFns.format(new Date(), "yyyy-MM-dd")}</Typography>
                             </Box>
                         </Box>
                         <Box sx={{ padding: 1 }}>
@@ -315,7 +341,7 @@ const SoDraft = ({ session }) => {
                                     <Typography fontSize={16} fontWeight={500}>Tax</Typography>
                                 </TableCell>
                                 <TableCell>
-                                    <Typography fontSize={14} fontWeight={500} align='right'>{numFormat.format(findSOByIdResp?.taxAmount?findSOByIdResp.taxAmount:0)}</Typography>
+                                    <Typography fontSize={14} fontWeight={500} align='right'>{numFormat.format(findSOByIdResp?.taxAmount ? findSOByIdResp.taxAmount : 0)}</Typography>
                                 </TableCell>
                             </TableRow>
                             <TableRow>
@@ -329,6 +355,8 @@ const SoDraft = ({ session }) => {
                         </TableBody>
                     </Table>
                 </TableContainer>
+                <Button variant='contained' size='small' disabled={findSOByIdResp?.soStatus == 'DRAFT'} onClick={handlePrintSO}>Print</Button>
+
             </Box>
             <Dialog
                 open={cancelSOTransactionError !== null}
@@ -337,7 +365,7 @@ const SoDraft = ({ session }) => {
                 <DialogTitle id="alert-dialog-title">
                     {"Delivery order or sales invoice is proceeded"}
                 </DialogTitle>
-                
+
                 <DialogActions>
                     <Button onClick={handleCloseCancelError} autoFocus>
                         Ok
