@@ -14,6 +14,9 @@ import salesOrderSlice from "./slices/sales-order-slice";
 import deliveryOrderSlice from "./slices/delivery-order-slice";
 import salesInvoiceSlice from "./slices/sales-invoice-slice";
 import bankReferenceSlice from "./slices/bank-reference-slice";
+import goodReceiveSlice from "./slices/good-reveive-slice";
+import supplierSlice from "./slices/supplier-slice";
+import productionSlice from "./slices/production-slice";
 
 const rootReducer = combineReducers({
     userManagement: userManagementSlice,
@@ -29,7 +32,10 @@ const rootReducer = combineReducers({
     salesOrder: salesOrderSlice,
     deliveryOrder: deliveryOrderSlice,
     salesInvoice: salesInvoiceSlice,
-    bankReference: bankReferenceSlice
+    bankReference: bankReferenceSlice,
+    goodReceive: goodReceiveSlice,
+    supplier: supplierSlice,
+    production: productionSlice,
 });
 
 export default rootReducer;

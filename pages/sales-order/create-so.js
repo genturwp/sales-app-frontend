@@ -83,7 +83,8 @@ const CreateSo = ({ session }) => {
     const [customerPoNumber, setCustomerPoNumber] = React.useState('');
     const [soDate, setSoDate] = React.useState(new Date());
     const [searchCust, setSearchCust] = React.useState('');
-    const [selectedCustomer, setSelectedCustomer] = React.useState(null);
+    // const [selectedCustomer, setSelectedCustomer] = React.useState(null);
+    const [customerName, setCustomerName] = React.useState('');
     const [customerPhone, setCustomerPhone] = React.useState('');
     const [customerEmail, setCustomerEmail] = React.useState('');
     const [shippingAddress, setShippingAddress] = React.useState('');
@@ -238,15 +239,18 @@ const CreateSo = ({ session }) => {
     }
 
     const onSaveSODraft = () => {
-
-        if (selectedCustomer === null || customerPhone === '' || shippingAddress === '' || salesItems.length === 0) {
+        console.log('customerName = ', customerName);
+        console.log('customerPhone = ', customerPhone);
+        console.log('shippingAddress = ', shippingAddress);
+        console.log('sales items = ', salesItems);
+        if (customerName === '' || customerPhone === '' || salesItems.length === 0) {
             setOpenSaveSoDraftNotif(true);
         } else {
             let salesOrderItems = salesItems.map(row => ({ ...row, itemDiscount: parseFloat(row.itemDiscount), salesQty: parseFloat(row.salesQty) }));
             const soDraft = {
                 customerPoNumber: customerPoNumber,
                 soDate: dateFns.format(soDate, "yyyy-MM-dd'T'HH:mm:ss.SSSXXX"),
-                customerId: selectedCustomer.id,
+                // customerId: selectedCustomer.id,
                 shippingAddress: shippingAddress,
                 shippingDate: dateFns.format(shippingDate, "yyyy-MM-dd'T'HH:mm:ss.SSSXXX"),
                 shippingCost: parseFloat(shippingCost),
@@ -258,7 +262,7 @@ const CreateSo = ({ session }) => {
                 tax: tax,
                 customerPhone: customerPhone,
                 customerEmail: customerEmail,
-                customerName: selectedCustomer.customerName,
+                customerName: customerName,
                 requestDiscount: requestDiscount,
                 grandDiscount: parseFloat(grandDiscount),
                 totalAmount: calculateTotalAmount(),
@@ -279,7 +283,7 @@ const CreateSo = ({ session }) => {
     const onCancelSoDraft = () => {
         setSoDate(new Date());
         setSearchCust('');
-        setSelectedCustomer(null);
+        // setSelectedCustomer(null);
         setCustomerPhone('');
         setCustomerEmail('');
         setShippingAddress('');
@@ -308,6 +312,7 @@ const CreateSo = ({ session }) => {
 
     return (
         <Box>
+            {console.log('customer name= ', customerName)}
             <Box component={Paper} sx={{
                 display: 'flex',
                 flexDirection: 'column'
@@ -358,7 +363,7 @@ const CreateSo = ({ session }) => {
                             <Typography fontWeight={500}>Customer</Typography>
                         </Box>
                         <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-                            <Autocomplete fullWidth
+                            {/* <Autocomplete fullWidth
                                 options={searchCustomerResp || []}
                                 size='small'
                                 getOptionLabel={(option) => option.customerName}
@@ -384,11 +389,13 @@ const CreateSo = ({ session }) => {
                                     fullWidth
                                     error={selectedCustomer === null}
                                     helperText={(selectedCustomer === null) && 'Customer cannot be empty'} />)}
-                            />
+                            /> 
                             <IconButton onClick={(evt) => setOpenCreateCustomerForm(true)}>
                                 <AddCircleOutlineRoundedIcon color='primary' />
                             </IconButton>
+                            */}
                         </Box>
+                        <TextField size='small' label='Customer Name' margin='dense' value={customerName || ''} onChange={(evt) => setCustomerName(evt.target.value)} />
                         <TextField size='small' label='Phone Number' margin='dense' value={customerPhone || ''} onChange={(evt) => setCustomerPhone(evt.target.value)} />
                         <TextField size='small' label='Email' margin='dense' value={customerEmail || ''} onChange={(evt) => setCustomerEmail(evt.target.value)} />
                     </Box>

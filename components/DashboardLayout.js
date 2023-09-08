@@ -30,6 +30,9 @@ import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import PeopleIcon from '@mui/icons-material/People';
 import CategoryIcon from '@mui/icons-material/Category';
 import { useSession } from 'next-auth/react';
+import MoveToInboxIcon from '@mui/icons-material/MoveToInbox';
+import SafetyDividerIcon from '@mui/icons-material/SafetyDivider';
+import FactoryIcon from '@mui/icons-material/Factory';
 
 const drawerWidth = 200;
 
@@ -293,6 +296,63 @@ export default function DashboardLayout({ children }) {
                 <CategoryIcon />
               </ListItemIcon>
               <ListItemText primary="Master Item" sx={{ opacity: open ? 1 : 0 }} />
+            </ListItemButton>
+          </Link> }
+          { (session?.user.roles.includes("ADMIN")|| session?.user.roles.includes("WAREHOUSE")) && <Link href="/good-receive" passHref>
+            <ListItemButton
+              sx={{
+                minHeight: 48,
+                justifyContent: open ? 'initial' : 'center',
+                px: 2.5,
+              }}>
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  mr: open ? 3 : 'auto',
+                  justifyContent: 'center',
+                }}
+              >
+                <MoveToInboxIcon />
+              </ListItemIcon>
+              <ListItemText primary="Good Receive" sx={{ opacity: open ? 1 : 0 }} />
+            </ListItemButton>
+          </Link> }
+          { (session?.user.roles.includes("ADMIN")|| session?.user.roles.includes("WAREHOUSE")) && <Link href="/supplier" passHref>
+            <ListItemButton
+              sx={{
+                minHeight: 48,
+                justifyContent: open ? 'initial' : 'center',
+                px: 2.5,
+              }}>
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  mr: open ? 3 : 'auto',
+                  justifyContent: 'center',
+                }}
+              >
+                <SafetyDividerIcon />
+              </ListItemIcon>
+              <ListItemText primary="Supplier" sx={{ opacity: open ? 1 : 0 }} />
+            </ListItemButton>
+          </Link> }
+          { (session?.user.roles.includes("ADMIN")|| session?.user.roles.includes("WAREHOUSE")) && <Link href="/production" passHref>
+            <ListItemButton
+              sx={{
+                minHeight: 48,
+                justifyContent: open ? 'initial' : 'center',
+                px: 2.5,
+              }}>
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  mr: open ? 3 : 'auto',
+                  justifyContent: 'center',
+                }}
+              >
+                <FactoryIcon />
+              </ListItemIcon>
+              <ListItemText primary="Production" sx={{ opacity: open ? 1 : 0 }} />
             </ListItemButton>
           </Link> }
           <Divider/>

@@ -48,6 +48,15 @@ export const searchInventoryItem = createAsyncThunk(
     }
 )
 
+export const searchInventoryItemNoPaging = createAsyncThunk(
+    `${namespace}/searchInventoryItemNoPaging`,
+    async (params, thunkAPI) => {
+        const endpointUrl = `${CONST.API_ENDPOINT}/inventory-management/master-item/master-item-inventory-no-paging?searchStr=${params.searchStr}`;
+        const resp = await axios.get(endpointUrl, { headers: { 'Authorization': `Bearer ${params.token}` } });
+        return resp.data.payload;
+    }
+)
+
 export const updateMasterItem = createAsyncThunk(
     `${namespace}/updateMasterItem`,
     async (params, thunkAPI) => {
@@ -82,7 +91,10 @@ const masterItemSlice = createSlice({
         updateMasterItemError: null,
         searchInventoryItemLoading: false,
         searchInventoryItemResp: null,
-        searchInventoryItemError: null
+        searchInventoryItemError: null,
+        searchInventoryItemNoPagingLoading: false,
+        searchInventoryItemNoPagingResp: null,
+        searchInventoryItemNoPagingError: null
     },
     reducers: {
         resetCreateMasterItemError: (state) => {
@@ -111,6 +123,15 @@ const masterItemSlice = createSlice({
         },
         resetSearchInventoryItemError: (state) => {
             state.searchInventoryItemError = null;
+        },
+        resetSearchInventoryItemLoading: (state) => {
+            state.searchInventoryItemNoPagingLoading = false;
+        },
+        resetSearchInventoryItemResp: (state) => {
+            state.searchInventoryItemNoPagingResp = null;
+        },
+        resetSearchInventoryItemError: (state) => {
+            state.searchInventoryItemNoPagingError = null;
         }
     },
     extraReducers: (builder) => {
@@ -189,6 +210,21 @@ const masterItemSlice = createSlice({
                 state.searchInventoryItemLoading = false;
                 state.searchInventoryItemResp = null;
                 state.searchInventoryItemError = action.error;
+            })
+            .addCase(searchInventoryItemNoPaging.pending, (state) => {
+                state.searchInventoryItemNoPagingLoading = true;
+                state.searchInventoryItemNoPagingResp = null;
+                state.searchInventoryItemNoPagingError = null;
+            })
+            .addCase(searchInventoryItemNoPaging.fulfilled, (state, action) => {
+                state.searchInventoryItemNoPagingLoading = false;
+                state.searchInventoryItemNoPagingResp = action.payload;
+                state.searchInventoryItemNoPagingError = null;
+            })
+            .addCase(searchInventoryItemNoPaging.rejected, (state, action) => {
+                state.searchInventoryItemNoPagingLoading = false;
+                state.searchInventoryItemNoPagingResp = null;
+                state.searchInventoryItemNoPagingError = action.error;
             })
 
 
