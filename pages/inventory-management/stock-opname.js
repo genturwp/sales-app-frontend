@@ -189,6 +189,8 @@ const StockOpname = ({ session }) => {
     const [inventoryWarehouse, setInventoryWarehouse] = React.useState(null);
     const [stockTakeData, setStockTakeData] = React.useState([]);
 
+    const [val, setVal] = React.useState('');
+
     React.useEffect(() => {
         dispatch(searchWarehouse({ searchStr: '', token: session.accessToken }));
     }, [session]);
@@ -248,16 +250,21 @@ const StockOpname = ({ session }) => {
 
     const onSetRealQuantity = (val, idx) => {
         let realQty = parseFloat(val);
-
         let newStocktakeData = [...stockTakeData];
-        newStocktakeData = newStocktakeData.map((el, i) => {
-            if (i === idx) {
-                el.realQuantity = realQty;
-                el.differentQuantity = realQty - el.inventoryQuantity;    
-            }
-            return el;
-        });
+        newStocktakeData[idx].realQuantity = realQty;
+        newStocktakeData[idx].differentQuantity = realQty -  newStocktakeData[idx].inventoryQuantity;
+        // newStocktakeData = newStocktakeData.map((el, i) => {
+        //     if (i === idx) {
+        //         el.realQuantity = realQty;
+        //         el.differentQuantity = realQty - el.inventoryQuantity;    
+        //     }
+        //     return el;
+        // });
         setStockTakeData(newStocktakeData);
+    }
+
+    const handleChange = (event) => {
+        setVal(event.target.value);
     }
 
     const onSaveStockTake = (stockTake) => {
@@ -430,15 +437,13 @@ const StockOpname = ({ session }) => {
                                         <TableCell>Different Quantity</TableCell>
                                         <TableCell></TableCell>
                                     </TableRow>
-                                    {console.log('createStockTakeResp = ', createStockTakeResp)}
                                 </TableHead>
-
                                 <TableBody>
                                     {(stockTakeData.length > 0) ? stockTakeData.map((row, idx) => (
                                         <TableRow key={row?.inventoryId}>
                                             <TableCell>{row?.itemName}</TableCell>
                                             <TableCell>{numFormat.format(row?.inventoryQuantity)}</TableCell>
-                                            <TableCell><TextField value={numFormat.format(row?.realQuantity)} type="number" onChange={(evt) => onSetRealQuantity(evt.target.value, idx)} size='small' margin='dense' /></TableCell>
+                                            <TableCell><TextField value={row.realQuantity} type="number" onChange={(evt) => {onSetRealQuantity(evt.target.value, idx)}} size='small' margin='dense' /></TableCell>
                                             <TableCell>{numFormat.format(row?.differentQuantity)}</TableCell>
                                             <TableCell><Button type='button' size='small' onClick={evt => onSaveStockTake(row)}>Save</Button></TableCell>
                                         </TableRow>))

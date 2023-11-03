@@ -83,7 +83,7 @@ const CreateSo = ({ session }) => {
     const [customerPoNumber, setCustomerPoNumber] = React.useState('');
     const [soDate, setSoDate] = React.useState(new Date());
     const [searchCust, setSearchCust] = React.useState('');
-    // const [selectedCustomer, setSelectedCustomer] = React.useState(null);
+    const [selectedCustomer, setSelectedCustomer] = React.useState(null);
     const [customerName, setCustomerName] = React.useState('');
     const [customerPhone, setCustomerPhone] = React.useState('');
     const [customerEmail, setCustomerEmail] = React.useState('');
@@ -312,7 +312,7 @@ const CreateSo = ({ session }) => {
 
     return (
         <Box>
-            {console.log('customer name= ', customerName)}
+            
             <Box component={Paper} sx={{
                 display: 'flex',
                 flexDirection: 'column'
@@ -363,13 +363,14 @@ const CreateSo = ({ session }) => {
                             <Typography fontWeight={500}>Customer</Typography>
                         </Box>
                         <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-                            {/* <Autocomplete fullWidth
+                            <Autocomplete fullWidth
                                 options={searchCustomerResp || []}
                                 size='small'
                                 getOptionLabel={(option) => option.customerName}
                                 value={selectedCustomer ?? null}
                                 onChange={(event, newValue) => {
                                     setSelectedCustomer(newValue);
+                                    setCustomerName(newValue?.customerName);
                                     setCustomerPhone(newValue?.customerPhone);
                                     setCustomerEmail(newValue?.customerEmail);
                                     setShippingAddress(newValue?.warehouseAddress);
@@ -393,9 +394,9 @@ const CreateSo = ({ session }) => {
                             <IconButton onClick={(evt) => setOpenCreateCustomerForm(true)}>
                                 <AddCircleOutlineRoundedIcon color='primary' />
                             </IconButton>
-                            */}
                         </Box>
-                        <TextField size='small' label='Customer Name' margin='dense' value={customerName || ''} onChange={(evt) => setCustomerName(evt.target.value)} />
+                        {/* <TextField size='small' label='Customer Name' margin='dense' value={customerName || ''} onChange={(evt) => setCustomerName(evt.target.value)} />
+                        <TextField size='small' label='Phone Number' margin='dense' value={customerPhone || ''} onChange={(evt) => setCustomerPhone(evt.target.value)} /> */}
                         <TextField size='small' label='Phone Number' margin='dense' value={customerPhone || ''} onChange={(evt) => setCustomerPhone(evt.target.value)} />
                         <TextField size='small' label='Email' margin='dense' value={customerEmail || ''} onChange={(evt) => setCustomerEmail(evt.target.value)} />
                     </Box>
